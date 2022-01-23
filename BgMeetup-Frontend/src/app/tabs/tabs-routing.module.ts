@@ -16,6 +16,10 @@ const routes: Routes = [
         loadChildren: () => import('../events-list/events-list.module').then(m => m.EventsListPageModule)
       },
       {
+        path: 'event-details',
+        loadChildren: () => import('../event-details/event-details.module').then(m => m.EventDetailsPageModule)
+      },
+      {
         path: '',
         redirectTo: '/login',
         pathMatch: 'full'

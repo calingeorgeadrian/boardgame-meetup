@@ -5,6 +5,7 @@ import { map } from "rxjs/operators";
 import { environment } from "../../environments/environment";
 import { EventModel } from "../models/event.model";
 import { EventParticipantModel } from "../models/eventParticipant.model";
+import { SaveResult } from "../models/saveResult";
 
 @Injectable({ providedIn: 'root' })
 export class EventService {
@@ -21,8 +22,8 @@ export class EventService {
     event.hostName = "Calin George";
     event.id = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a3abc";
     event.location = "Tulcea";
-    event.participantsCount = 1;
-    event.reqNumberOfPlayers = 2;
+    event.participantsCount = 2;
+    event.reqNumberOfPlayers = 4;
     event.status = 1;
     event.title = "Test 1";
 
@@ -45,8 +46,8 @@ export class EventService {
     event1.hostName = "Calin George";
     event1.id = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a3abc";
     event1.location = "Tulcea";
-    event1.participantsCount = 1;
-    event1.reqNumberOfPlayers = 2;
+    event1.participantsCount = 2;
+    event1.reqNumberOfPlayers = 4;
     event1.status = 1;
     event1.title = "Test 1";
     events.push(event1);
@@ -83,5 +84,99 @@ export class EventService {
 
     //    return returnValue;
     //  }));
+  }
+
+  saveEvent(eventModel: EventModel) {
+    var saveResult = new SaveResult();
+    saveResult.result = true;
+    saveResult.errors = null;
+
+    return saveResult;
+
+    //let formData: FormData = new FormData();
+    //formData.append('eventDetails', JSON.stringify(eventModel));
+
+    //return this.http.post<any>(environment.apiUrl + '/events/SaveEventAsync', formData)
+    //  .pipe(returnValue => {
+    //    return returnValue;
+    //  });
+  }
+
+  //getEventParticipants(id: any): Observable<ParticipantModel[]> {
+  getEventParticipants(id: any): EventParticipantModel[] {
+    var eventParticipants = [];
+
+    var participant1 = new EventParticipantModel();
+    participant1.id = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a5bbc";
+    participant1.participantId = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a3bbc";
+    participant1.bggUsername = "RoyalFlush37";
+    participant1.email = "calingeorgeadrian98@gmail.com";
+    participant1.eventId = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a3abc";
+    participant1.name = "Calin George";
+    participant1.status = 1;
+    eventParticipants.push(participant1);
+
+    var participant2 = new EventParticipantModel();
+    participant2.id = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a5bbc";
+    participant2.participantId = "1b77ba39-fb77-4bad-a44d-2aedcca9224c";
+    participant2.bggUsername = "mateicristina";
+    participant2.email = "cristinamatei@gmail.com";
+    participant2.eventId = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a3abc";
+    participant2.name = "Matei Cristina";
+    participant2.status = 1;
+    eventParticipants.push(participant2);
+
+    var participant3 = new EventParticipantModel();
+    participant3.id = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a5bbc";
+    participant3.participantId = "945dfb42-576b-4c35-b208-fac09a8bd12d";
+    participant3.bggUsername = "weirdojax";
+    participant3.email = "popandrei@gmail.com";
+    participant3.eventId = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a3abc";
+    participant3.name = "Andrei Popa";
+    participant3.status = 2;
+    eventParticipants.push(participant3);
+
+    var participant4 = new EventParticipantModel();
+    participant4.id = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a5bbc";
+    participant4.participantId = "9b68f712-feb5-4bcc-9e58-cf1f234fd8c0";
+    participant4.bggUsername = "ema1ih";
+    participant4.email = "ema1ih@gmail.com";
+    participant4.eventId = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a3abc";
+    participant4.name = "Ema Hirhui";
+    participant4.status = 0;
+    eventParticipants.push(participant4);
+
+    var participant5 = new EventParticipantModel();
+    participant5.id = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a5bbc";
+    participant5.participantId = "34f8aca4-646e-47f8-991c-24f8337f2035";
+    participant5.bggUsername = "alexion";
+    participant5.email = "alexion@gmail.com";
+    participant5.eventId = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a3abc";
+    participant5.name = "Alexandru Ionescu";
+    participant5.status = 1;
+    eventParticipants.push(participant5);
+
+    return eventParticipants;
+    //return this.http.get<ParticipantModel[]>(environment.apiUrl + '/events/GetEventParticipantsAsync?eventId=' + id);
+  }
+
+/*  acceptEventInvitation(eventId: any, userId: any): Observable<any> {*/
+  acceptEventInvitation(eventId: any, userId: any): any {
+    var saveResult = new SaveResult();
+    saveResult.result = true;
+    saveResult.errors = null;
+
+    return saveResult;
+    //return this.http.get<any>(environment.apiUrl + '/events/AcceptEventInvitationAsync?eventId=' + eventId + '&userId=' + userId);
+  }
+
+/*  declineEventInvitation(eventId: any, userId: any): Observable<any> {*/
+  declineEventInvitation(eventId: any, userId: any): any {
+    var saveResult = new SaveResult();
+    saveResult.result = true;
+    saveResult.errors = null;
+
+    return saveResult;
+    //return this.http.get<any>(environment.apiUrl + '/events/DeclineEventInvitationAsync?eventId=' + eventId + '&userId=' + userId);
   }
 }

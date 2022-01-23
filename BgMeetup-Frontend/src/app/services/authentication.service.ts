@@ -25,7 +25,6 @@ export class AuthenticationService {
     loginInfo.bggUsername = "RoyalFlush37";
     loginInfo.location = "Tulcea";
 
-    console.log(loginInfo);
     //localStorage.setItem('currentLoginInfo', JSON.stringify(loginInfo));
     //sessionStorage.setItem('currentLoginInfo', JSON.stringify(loginInfo));
 

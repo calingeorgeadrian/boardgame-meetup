@@ -21,6 +21,14 @@ const routes: Routes = [
   {
     path: 'events-list',
     loadChildren: () => import('./events-list/events-list.module').then( m => m.EventsListPageModule)
+  },
+  {
+    path: 'event-details',
+    loadChildren: () => import('./event-details/event-details.module').then( m => m.EventDetailsPageModule)
+  },
+  {
+    path: 'event-form',
+    loadChildren: () => import('./event-form/event-form.module').then( m => m.EventFormPageModule)
   }
 ];
 @NgModule({

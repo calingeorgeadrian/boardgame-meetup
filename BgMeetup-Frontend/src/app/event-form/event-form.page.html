@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Create Event</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form (ngSubmit)="logForm()">
+    <ion-item>
+      <ion-icon slot="start" name="calendar-outline">
+      </ion-icon>
+      <ion-label>Date</ion-label>
+      <ion-datetime displayFormat="D MMM YYYY H:mm" value="event.date" [(ngModel)]="event.date" name="date"></ion-datetime>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="reader-outline">
+      </ion-icon>
+      <ion-label>Title</ion-label>
+      <ion-input type="input" [(ngModel)]="event.title" name="title"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="reader-outline">
+      </ion-icon>
+      <ion-label>Required number of players</ion-label>
+      <ion-input type="number" [(ngModel)]="event.reqNumberOfPlayers" name="reqNumberOfPlayers" min="2"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="location-outline">
+      </ion-icon>
+      <ion-label>Location</ion-label>
+      <ion-input type="input" [(ngModel)]="event.location" name="location"></ion-input>
+    </ion-item>
+    <ion-button type="submit" expand="full">Create</ion-button>
+  </form>
+</ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <ion-button color="danger" expand="full" (click)="dismiss()">Close</ion-button>
+  </ion-toolbar>
+</ion-footer>

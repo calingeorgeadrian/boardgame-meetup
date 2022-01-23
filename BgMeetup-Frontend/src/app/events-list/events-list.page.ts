@@ -60,14 +60,40 @@ export class EventsListPage implements OnInit {
   }
 
   viewEvent(id: any) {
-    console.log("view event " + id);
+    this.router.navigate(['/tabs/event-details'], { queryParams: { id: id }, replaceUrl: true });
   }
 
   acceptInvitation(id: any) {
-    console.log("accept invitation " + id);
+    var saveResult = this.eventService.acceptEventInvitation(id, this.globals.user.id);
+    if (saveResult.result) {
+      this.getEvents();
+      this.presentToast('Invitation accepted.', 'success');
+    }
+
+    //this.eventService.acceptEventInvitation(id, this.globals.user.id)
+    //  .subscribe(
+    //    saveResult => {
+    //      if (saveResult.result) {
+    //        this.getEvents();
+    //        this.presentToast('Invitation accepted.', 'success');
+    //      }
+    //    });
   }
 
   declineInvitation(id: any) {
-    console.log("decline invitation " + id);
+    var saveResult = this.eventService.declineEventInvitation(id, this.globals.user.id);
+    if (saveResult.result) {
+      this.getEvents();
+      this.presentToast('Invitation declined.', 'danger');
+    }
+
+    //this.eventService.declineEventInvitation(id, this.globals.user.id)
+    //  .subscribe(
+    //    saveResult => {
+    //      if (saveResult.result) {
+    //        this.getEvents();
+    //        this.presentToast('Invitation declined.', 'danger');
+    //      }
+    //    });
   }
 }
