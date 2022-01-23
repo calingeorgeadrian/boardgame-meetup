@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-item>
+      <strong>Participants</strong>
+      <ion-label style="margin-left: 10px;">{{participants.length}}</ion-label>
+    </ion-item>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let item of participants">
+      <!--<ion-avatar slot="start">
+    <img src="{{item.image}}">
+  </ion-avatar>-->
+      <ion-label>{{item.name}}</ion-label>
+      <ion-badge color="primary" slot="end" *ngIf="item.participantId == event.hostId">Host</ion-badge>
+      <ion-badge color="warning" slot="end" *ngIf="item.status == 0 && item.participantId != event.hostId">Pending</ion-badge>
+      <ion-badge color="success" slot="end" *ngIf="item.status == 1 && item.participantId != event.hostId">Accepted</ion-badge>
+      <ion-badge color="danger" slot="end" *ngIf="item.status == 2 && item.participantId != event.hostId">Refused</ion-badge>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button color="danger" expand="full" (click)="dismiss()">Close</ion-button>
+  </ion-toolbar>
+</ion-footer>

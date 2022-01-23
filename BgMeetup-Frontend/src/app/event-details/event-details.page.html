@@ -61,7 +61,7 @@
       <ion-badge color="danger" slot="end" *ngIf="item.status == 2 && item.participantId != event.hostId">Refused</ion-badge>
     </ion-item>
     <ion-item *ngIf="participants.length > 4">
-      <ion-label><a (click)="seeParticipants()">See all participants...</a></ion-label>
+      <ion-label><a (click)="viewParticipants()">View all participants...</a></ion-label>
     </ion-item>
   </ion-list>
 

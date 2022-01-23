@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
+import { EventParticipantsListPage } from '../event-participants-list/event-participants-list.page';
 import { EventModel } from '../models/event.model';
 import { EventParticipantModel } from '../models/eventParticipant.model';
 import { UserModel } from '../models/user.model';
@@ -55,8 +56,12 @@ export class EventDetailsPage implements OnInit {
     console.log("vote games");
   }
 
-  async seeParticipants() {
-    console.log("view participants");
+  async viewParticipants() {
+    const modal = await this.modalController.create({
+      component: EventParticipantsListPage,
+      componentProps: { event: this.event, participants: this.participants }
+    });
+    return await modal.present();
   }
 
   editLocation() {

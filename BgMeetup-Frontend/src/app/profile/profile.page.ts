@@ -23,7 +23,6 @@ export class ProfilePage implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.globals);
     this.user = this.userService.getUser(this.globals.user.id);
     //this.userService.getUser(this.globals.user.id).subscribe(userDetails => {
     //  this.user = userDetails;

@@ -1,0 +1,76 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{game.title}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card>
+    <ion-slides pager="true">
+      <ion-slide class="slide">
+        <img style="width: auto; max-height: 500px !important; margin: 0 auto; display:block;"
+             src="{{game.image}}" />
+      </ion-slide>
+    </ion-slides>
+
+    <ion-card-header>
+      <ion-grid>
+        <ion-row>
+          <ion-col class="ion-text-center">
+            <div>
+              <ion-card-title>{{game.title}}</ion-card-title>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-header>
+
+    <ion-list>
+      <ion-item>
+        <ion-icon slot="start" name="people-outline">
+        </ion-icon>
+        <ion-label>
+          <h2><strong>Players</strong></h2>
+          <h3 *ngIf="game.minPlayers === game.maxPlayers">{{game.minPlayers}}</h3>
+          <h3 *ngIf="game.minPlayers !== game.maxPlayers">{{game.minPlayers}}-{{game.maxPlayers}}</h3>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-icon slot="start" name="time-outline">
+        </ion-icon>
+        <ion-label>
+          <h2><strong>Time</strong></h2>
+          <h3 *ngIf="game.minPlayTime === game.maxPlayTime">{{game.minPlayTime}} Min</h3>
+          <h3 *ngIf="game.minPlayTime !== game.maxPlayTime">{{game.minPlayTime}}-{{game.maxPlayTime}} Min</h3>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-icon slot="start" name="shapes-outline">
+        </ion-icon>
+        <ion-label>
+          <h2><strong>Complexity</strong></h2>
+          <h3>{{game.complexity | number : '1.2-2'}} / 5</h3>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+    <ion-card-content>
+      <ion-item>
+        <ion-label>
+          <h2><strong>Description</strong></h2>
+        </ion-label>
+      </ion-item>
+
+      <ion-item>
+        <div [innerHTML]="game.description">
+        </div>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button color="danger" expand="full" (click)="dismiss()">Close</ion-button>
+  </ion-toolbar>
+</ion-footer>

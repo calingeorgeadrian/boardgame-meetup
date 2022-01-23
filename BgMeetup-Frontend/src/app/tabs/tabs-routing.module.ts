@@ -12,6 +12,10 @@ const routes: Routes = [
         loadChildren: () => import('../profile/profile.module').then(m => m.ProfilePageModule)
       },
       {
+        path: 'collection',
+        loadChildren: () => import('../collection/collection.module').then(m => m.CollectionPageModule)
+      },
+      {
         path: 'events-list',
         loadChildren: () => import('../events-list/events-list.module').then(m => m.EventsListPageModule)
       },
