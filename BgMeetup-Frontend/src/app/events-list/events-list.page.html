@@ -1,0 +1,80 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Events
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-list>
+    <ion-item-divider>
+      <ion-label><strong>Invitations</strong></ion-label>
+    </ion-item-divider>
+    <ion-item *ngFor="let event of invites">
+      <ion-card>
+        <ion-item (click)="viewEvent(event.id)">
+          <ion-label>{{event.title}}</ion-label>
+          <ion-label class="date">{{event.date | date:'MMM dd, yyyy, HH:mm'}}</ion-label>
+        </ion-item>
+        <ion-row>
+          <ion-col>
+            <ion-card-content>
+              <ion-label>Created by: {{event.hostName}}</ion-label>
+              <ion-label>Location: {{event.location}}</ion-label>
+              <ion-label>Participants: {{event.participantsCount}} / {{event.reqNumberOfPlayers}}</ion-label>
+            </ion-card-content>
+          </ion-col>
+        </ion-row>
+
+        <ion-button color="success" expand="full" (click)="acceptInvitation(event.id)">Accept</ion-button>
+        <ion-button color="danger" expand="full" (click)="declineInvitation(event.id)">Decline</ion-button>
+      </ion-card>
+    </ion-item>
+
+    <ion-item-divider>
+      <ion-label><strong>Your Events</strong></ion-label>
+    </ion-item-divider>
+
+    <ion-item *ngFor="let event of ownEvents">
+      <ion-card>
+        <ion-item (click)="viewEvent(event.id)">
+          <ion-label>{{event.title}}</ion-label>
+          <ion-label class="date">{{event.date | date:'MMM dd, yyyy, HH:mm'}}</ion-label>
+        </ion-item>
+        <ion-row>
+          <ion-col>
+            <ion-card-content>
+              <ion-label>Created by: {{event.hostName}}</ion-label>
+              <ion-label>Location: {{event.location}}</ion-label>
+              <ion-label>Participants: {{event.participantsCount}} / {{event.reqNumberOfPlayers}}</ion-label>
+            </ion-card-content>
+          </ion-col>
+        </ion-row>
+      </ion-card>
+    </ion-item>
+
+    <ion-item-divider>
+      <ion-label><strong>Other Events</strong></ion-label>
+    </ion-item-divider>
+    <ion-item *ngFor="let event of otherEvents">
+      <ion-card>
+        <ion-item (click)="viewEvent(event.id)">
+          <ion-label>{{event.title}}</ion-label>
+          <ion-label class="date">{{event.date | date:'MMM dd, yyyy, HH:mm'}}</ion-label>
+        </ion-item>
+        <ion-row>
+          <ion-col>
+            <ion-card-content>
+              <ion-label>Created by: {{event.hostName}}</ion-label>
+              <ion-label>Location: {{event.location}}</ion-label>
+              <ion-label>Participants: {{event.participantsCount}} / {{event.reqNumberOfPlayers}}</ion-label>
+            </ion-card-content>
+          </ion-col>
+        </ion-row>
+      </ion-card>
+    </ion-item>
+  </ion-list>
+</ion-content>

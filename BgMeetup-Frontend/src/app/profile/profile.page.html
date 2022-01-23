@@ -1,0 +1,75 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/events"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Profile</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card>
+    <!--<ion-avatar style="margin: auto; width: 256px; height: 256px;">
+      <img src="">
+    </ion-avatar>-->
+
+    <ion-card-header>
+      <ion-grid>
+        <ion-row>
+          <ion-col class="ion-text-center">
+            <div>
+              <ion-card-title>{{user.lastName}} {{user.firstName}}</ion-card-title>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-header>
+
+    <ion-list>
+      <ion-item>
+        <ion-icon slot="start" name="mail-outline">
+        </ion-icon>
+        <ion-label style="width: auto;">
+          <h2><strong>Email</strong></h2>
+          <h3>{{user.email}}</h3>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-avatar slot="start">
+          <img src="assets/images/bgg-icon.jpg">
+        </ion-avatar>
+        <ion-label style="width: auto;">
+          <h2><strong>BGG Username</strong></h2>
+          <h3 *ngIf="!bggInputVisible">{{user.bggUsername}}</h3>
+          <ion-input type="text"
+                     *ngIf="bggInputVisible"
+                     name="bggUsername"
+                     [(ngModel)]="user.bggUsername"
+                     (ionBlur)="saveBGGUsername()"
+                     (keyup.enter)="saveBGGUsername()"></ion-input>
+        </ion-label>
+        <ion-icon slot="end" name="create-outline" (click)="editBGGUsername()">
+        </ion-icon>
+      </ion-item>
+      <ion-item>
+        <ion-icon slot="start" name="location-outline">
+        </ion-icon>
+        <ion-label>
+          <h2><strong>Location</strong></h2>
+          <h3 *ngIf="!locationInputVisible">{{user.location}}</h3>
+          <ion-input type="text"
+                     *ngIf="locationInputVisible"
+                     name="location"
+                     [(ngModel)]="user.location"
+                     (ionBlur)="saveLocation()"
+                     (keyup.enter)="saveLocation()"></ion-input>
+        </ion-label>
+        <ion-icon slot="end" name="create-outline" (click)="editLocation()">
+        </ion-icon>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+  <!--<ion-button color="primary" expand="full" href="/tabs/collection">Collection</ion-button>
+  <ion-button color="primary" expand="full" href="/tabs/friends">Friends</ion-button>-->
+  <ion-button color="primary" expand="full" (click)="logout()">Logout</ion-button>
+</ion-content>

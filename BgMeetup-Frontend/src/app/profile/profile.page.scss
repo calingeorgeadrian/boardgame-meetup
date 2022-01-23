@@ -1,0 +1,36 @@
+#container {
+  text-align: center;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+
+.inputfile {
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: 1;
+  width: 50px;
+  height: 50px;
+}
+
+.inputfile + ion-icon {
+  font-size: 1.25rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  overflow: hidden;
+  width: 50px;
+  height: 50px;
+  pointer-events: none;
+  cursor: pointer;
+  line-height: 50px;
+  text-align: center;
+}
+
+.inputfile + label svg {
+  fill: #fff;
+}
