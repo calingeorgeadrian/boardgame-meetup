@@ -9,4 +9,6 @@ export class GameModel {
   minPlayTime: number;
   maxPlayTime: number;
   complexity: number;
+  year: number;
+  isSelected: boolean;
 }

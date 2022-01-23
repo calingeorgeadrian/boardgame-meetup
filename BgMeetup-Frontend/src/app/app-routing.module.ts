@@ -49,6 +49,14 @@ const routes: Routes = [
   {
     path: 'invite',
     loadChildren: () => import('./invite/invite.module').then( m => m.InvitePageModule)
+  },
+  {
+    path: 'propose-games',
+    loadChildren: () => import('./propose-games/propose-games.module').then( m => m.ProposeGamesPageModule)
+  },
+  {
+    path: 'vote-games',
+    loadChildren: () => import('./vote-games/vote-games.module').then( m => m.VoteGamesPageModule)
   }
 ];
 @NgModule({

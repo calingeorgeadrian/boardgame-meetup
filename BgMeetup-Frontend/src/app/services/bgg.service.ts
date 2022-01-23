@@ -23,6 +23,7 @@ export class BGGService {
       var title = items[i].getElementsByTagName('name')[0].innerHTML;
       var type = items[i].getAttribute('subtype');
       var image = (items[i].getElementsByTagName("image")[0] != undefined ? items[i].getElementsByTagName("image")[0].childNodes[0].nodeValue : null);
+      var yearPublished = parseInt(items[i].getElementsByTagName("yearpublished")[0].innerHTML);
       games.push({
         id: id,
         title: title,
@@ -33,7 +34,9 @@ export class BGGService {
         maxPlayers: null,
         minPlayTime: null,
         maxPlayTime: null,
-        complexity: null
+        complexity: null,
+        year: yearPublished,
+        isSelected: false
       });
     }
 
@@ -59,6 +62,7 @@ export class BGGService {
     game.minPlayTime = xmlDoc.getElementsByTagName("minplaytime")[0].getAttribute('value');
     game.maxPlayTime = xmlDoc.getElementsByTagName("maxplaytime")[0].getAttribute('value');
     game.complexity = xmlDoc.getElementsByTagName("averageweight")[0].getAttribute('value');
+    game.year = xmlDoc.getElementsByTagName("yearpublished")[0].getAttribute('value');
 
     return game;
   }

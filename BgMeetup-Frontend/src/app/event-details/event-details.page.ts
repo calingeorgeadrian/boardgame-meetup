@@ -2,12 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { EventParticipantsListPage } from '../event-participants-list/event-participants-list.page';
+import { GameDetailsPage } from '../game-details/game-details.page';
 import { InvitePage } from '../invite/invite.page';
 import { EventModel } from '../models/event.model';
 import { EventParticipantModel } from '../models/eventParticipant.model';
 import { UserModel } from '../models/user.model';
+import { ProposeGamesPage } from '../propose-games/propose-games.page';
 import { EventService } from '../services/event.service';
 import { UserService } from '../services/user.service';
+import { VoteGamesPage } from '../vote-games/vote-games.page';
 
 @Component({
   selector: 'app-event-details',
@@ -19,7 +22,7 @@ export class EventDetailsPage implements OnInit {
   event: EventModel = new EventModel();
   eventHost: UserModel = new UserModel();
   participants: EventParticipantModel[] = [];
-  games: any[] = [];
+  proposedGames: any[] = [];
 
   participantsCount: number;
   locationInputVisible: boolean = false;
@@ -39,6 +42,7 @@ export class EventDetailsPage implements OnInit {
           this.event = this.eventService.getEvent(this.id);
           this.participants = this.eventService.getEventParticipants(this.id);
           this.event.participantsCount = this.participants.length;
+          this.proposedGames = this.eventService.getEventProposedGames(this.id);
 
           //this.eventService.getEvent(this.id).subscribe(eventDetails => {
           //  this.event = eventDetails;
@@ -58,8 +62,28 @@ export class EventDetailsPage implements OnInit {
     return await modal.present();
   }
 
+  async viewGame(id: any) {
+    const modal = await this.modalController.create({
+      component: GameDetailsPage,
+      componentProps: { id: id }
+    });
+    return await modal.present();
+  }
+
+  async propose() {
+    const modal = await this.modalController.create({
+      component: ProposeGamesPage,
+      componentProps: { eventId: this.event.id, participants: this.participants }
+    });
+    return await modal.present();
+  }
+
   async vote() {
-    console.log("vote games");
+    const modal = await this.modalController.create({
+      component: VoteGamesPage,
+      componentProps: { eventId: this.event.id }
+    });
+    return await modal.present();
   }
 
   async viewParticipants() {

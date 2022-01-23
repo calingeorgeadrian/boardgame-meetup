@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Propose games</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item-group *ngFor="let item of games">
+      <ion-item-divider>
+        <ion-label>Owned by: {{item.owner}}</ion-label>
+      </ion-item-divider>
+      <ion-item-sliding *ngFor="let game of item.games">
+
+        <ion-item>
+          <ion-avatar slot="start">
+            <img src="{{game.image}}">
+          </ion-avatar>
+          <ion-label>{{game.title}}</ion-label>
+          <ion-checkbox slot="end" [(ngModel)]="game.isSelected"></ion-checkbox>
+        </ion-item>
+
+        <ion-item-options side="end">
+          <ion-item-option color="primary" (click)="viewGame(game.id)">View</ion-item-option>
+        </ion-item-options>
+
+      </ion-item-sliding>
+    </ion-item-group>
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button color="primary" expand="full" (click)="clear()">Clear proposals</ion-button>
+    <ion-button color="success" expand="full" (click)="propose()">Propose</ion-button>
+    <ion-button color="danger" expand="full" (click)="dismiss()">Close</ion-button>
+  </ion-toolbar>
+</ion-footer>

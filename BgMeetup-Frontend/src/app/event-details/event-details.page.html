@@ -76,6 +76,11 @@
             </div>
           </ion-col>
           <ion-col>
+          <div style="text-align: center;">
+            <ion-button fill="outline" slot="start" (click)="propose()">Propose</ion-button>
+          </div>
+        </ion-col>
+          <ion-col>
             <div style="text-align: center;">
               <ion-button fill="outline" slot="end" (click)="vote()">Vote</ion-button>
             </div>
@@ -88,13 +93,13 @@
         </ion-row>
       </ion-grid>
     </ion-item>
-    <ion-item (click)="view(item.id)"
-              *ngFor="let item of games | slice:0:4; let i=index">
+    <ion-item (click)="viewGame(item.gameId)"
+              *ngFor="let item of proposedGames | slice:0:4; let i=index">
       <ion-avatar slot="start">
         <img src="{{item.image}}">
       </ion-avatar>
       <ion-label>{{item.title}}</ion-label>
-      <ion-label style="text-align: end;">1</ion-label>
+      <ion-label style="text-align: end;">{{item.votes}}</ion-label>
     </ion-item>
   </ion-list>
 </ion-content>

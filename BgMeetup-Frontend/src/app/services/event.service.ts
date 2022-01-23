@@ -5,14 +5,17 @@ import { map } from "rxjs/operators";
 import { environment } from "../../environments/environment";
 import { EventModel } from "../models/event.model";
 import { EventParticipantModel } from "../models/eventParticipant.model";
+import { ProposedGameModel } from "../models/proposedGame.model";
 import { SaveResult } from "../models/saveResult";
+import { BGGService } from "./bgg.service";
 
 @Injectable({ providedIn: 'root' })
 export class EventService {
   req = new XMLHttpRequest();
 
   constructor(
-    private http: HttpClient) { }
+    private http: HttpClient,
+    private bggService: BGGService) { }
 
   //getEvent(id: any): Observable<EventModel> {
   getEvent(id: any): EventModel {
@@ -119,7 +122,7 @@ export class EventService {
     var participant2 = new EventParticipantModel();
     participant2.id = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a5bbc";
     participant2.participantId = "1b77ba39-fb77-4bad-a44d-2aedcca9224c";
-    participant2.bggUsername = "mateicristina";
+    participant2.bggUsername = "iseoni";
     participant2.email = "cristinamatei@gmail.com";
     participant2.eventId = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a3abc";
     participant2.name = "Matei Cristina";
@@ -139,7 +142,7 @@ export class EventService {
     var participant4 = new EventParticipantModel();
     participant4.id = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a5bbc";
     participant4.participantId = "9b68f712-feb5-4bcc-9e58-cf1f234fd8c0";
-    participant4.bggUsername = "ema1ih";
+    participant4.bggUsername = "liviubarbacaru";
     participant4.email = "ema1ih@gmail.com";
     participant4.eventId = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a3abc";
     participant4.name = "Ema Hirhui";
@@ -149,7 +152,7 @@ export class EventService {
     var participant5 = new EventParticipantModel();
     participant5.id = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a5bbc";
     participant5.participantId = "34f8aca4-646e-47f8-991c-24f8337f2035";
-    participant5.bggUsername = "alexion";
+    participant5.bggUsername = "asgardian28";
     participant5.email = "alexion@gmail.com";
     participant5.eventId = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a3abc";
     participant5.name = "Alexandru Ionescu";
@@ -194,5 +197,61 @@ export class EventService {
 
     return saveResult;
     //return this.http.get<any>(environment.apiUrl + '/events/DeclineEventInvitationAsync?eventId=' + eventId + '&userId=' + userId);
+  }
+
+  //getEventProposedGames(id: any): Observable<ProposedGameModel[]> {
+  getEventProposedGames(id: any): ProposedGameModel[] {
+    var games = [];
+
+    var proposers = [{ id: "49125c98-1aa6-4763-8e29-8de47b3b2512", name: "Calin George" }, { id: "df42cc31-c2c2-4fb2-9182-d601282e30ec", name: "Hirhui Ema" }, { id: "ed49c1cc-09d4-4f73-9a71-9d0035e616ce", name: "Matei Cristina" }]
+    var bggCollectionGames = this.bggService.getUserCollection("asgardian28");
+
+    bggCollectionGames.forEach(g => {
+      var proposer = proposers[Math.floor(Math.random() * proposers.length)];
+      var game = new ProposedGameModel();
+      game.gameId = g.id;
+      game.title = g.title;
+      game.image = g.image;
+      game.ownerId = proposers[Math.floor(Math.random() * proposers.length)].id;
+      game.proposerId = proposer.id;
+      game.proposerName = proposer.name;
+      game.votes = Math.abs(g.year - 2000);
+
+      games.push(game);
+    });
+
+    games.sort(function (a, b) {
+      return (a.votes > b.votes) ? -1 : (a.votes < b.votes) ? 1 : 0;
+    });
+
+    return games;
+
+    //return this.http.get<ProposedGameModel[]>(environment.apiUrl + '/events/getEventProposedGamesAsync?eventId=' + id);
+  }
+
+  submitProposals(votes: any[], proposerId: any) {
+    var saveResult = new SaveResult();
+    saveResult.result = true;
+    saveResult.errors = null;
+
+    return saveResult;
+
+    //return this.http.post<any>(environment.apiUrl + '/events/submitProposalsAsync?voterId=' + voterId, votes)
+    //  .pipe(map(returnValue => {
+    //    return returnValue;
+    //  }));
+  }
+
+  submitVotes(votes: any[], voterId: any) {
+    var saveResult = new SaveResult();
+    saveResult.result = true;
+    saveResult.errors = null;
+
+    return saveResult;
+
+    //return this.http.post<any>(environment.apiUrl + '/events/submitVotesAsync?voterId=' + voterId, votes)
+    //  .pipe(map(returnValue => {
+    //    return returnValue;
+    //  }));
   }
 }
