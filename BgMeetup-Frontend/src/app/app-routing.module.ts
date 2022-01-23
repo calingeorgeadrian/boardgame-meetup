@@ -41,6 +41,14 @@ const routes: Routes = [
   {
     path: 'game-details',
     loadChildren: () => import('./game-details/game-details.module').then( m => m.GameDetailsPageModule)
+  },
+  {
+    path: 'friends',
+    loadChildren: () => import('./friends/friends.module').then( m => m.FriendsPageModule)
+  },
+  {
+    path: 'invite',
+    loadChildren: () => import('./invite/invite.module').then( m => m.InvitePageModule)
   }
 ];
 @NgModule({

@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Invite</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form (ngSubmit)="invite()">
+    <ion-item>
+      <ion-label>Email</ion-label>
+      <ion-input type="email" [(ngModel)]="email" name="email"></ion-input>
+    </ion-item>
+    <ion-button type="submit" expand="full">Invite</ion-button>
+  </form>
+  <ion-list>
+    <ion-item>
+      <strong>Friends</strong>
+      <ion-label style="margin-left: 10px;">{{friends.length}}</ion-label>
+    </ion-item>
+    <ion-item *ngFor="let item of friends">
+      <!--<ion-avatar slot="start">
+        <img src="{{item.image}}">
+      </ion-avatar>-->
+      <ion-label>{{item.name}}</ion-label>
+      <ion-button fill="outline" slot="end" (click)="inviteFriend(item)">Invite</ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <ion-button color="danger" expand="full" (click)="dismiss()">Close</ion-button>
+  </ion-toolbar>
+</ion-footer>

@@ -160,6 +160,22 @@ export class EventService {
     //return this.http.get<ParticipantModel[]>(environment.apiUrl + '/events/GetEventParticipantsAsync?eventId=' + id);
   }
 
+  sendEventInvitation(participantModel: EventParticipantModel) {
+    var saveResult = new SaveResult();
+    saveResult.result = true;
+    saveResult.errors = null;
+
+    return saveResult;
+
+    //let formData: FormData = new FormData();
+    //formData.append('participantDetails', JSON.stringify(participantModel));
+
+    //return this.http.post<any>(environment.apiUrl + '/events/SendEventInvitationAsync', formData)
+    //  .pipe(returnValue => {
+    //    return returnValue;
+    //  });
+  }
+
 /*  acceptEventInvitation(eventId: any, userId: any): Observable<any> {*/
   acceptEventInvitation(eventId: any, userId: any): any {
     var saveResult = new SaveResult();

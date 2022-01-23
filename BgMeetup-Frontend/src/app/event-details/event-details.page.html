@@ -47,7 +47,8 @@
   <ion-list>
     <ion-item>
       <strong>Participants</strong>
-      <ion-label style="margin-left: 10px;">{{event.participantsCount}} / {{event.reqNumberOfPlayers}}</ion-label>
+      <ion-label style="margin-left: 10px;" color="danger" *ngIf="event.participantsCount < event.reqNumberOfPlayers">{{event.participantsCount}} / {{event.reqNumberOfPlayers}}</ion-label>
+      <ion-label style="margin-left: 10px;" color="success" *ngIf="event.participantsCount >= event.reqNumberOfPlayers">{{event.participantsCount}} / {{event.reqNumberOfPlayers}}</ion-label>
       <ion-button fill="outline" slot="end" (click)="invite()">Invite</ion-button>
     </ion-item>
     <ion-item *ngFor="let item of participants | slice:0:4; let i=index">

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { EventParticipantsListPage } from '../event-participants-list/event-participants-list.page';
+import { InvitePage } from '../invite/invite.page';
 import { EventModel } from '../models/event.model';
 import { EventParticipantModel } from '../models/eventParticipant.model';
 import { UserModel } from '../models/user.model';
@@ -37,6 +38,7 @@ export class EventDetailsPage implements OnInit {
         if (this.id) {
           this.event = this.eventService.getEvent(this.id);
           this.participants = this.eventService.getEventParticipants(this.id);
+          this.event.participantsCount = this.participants.length;
 
           //this.eventService.getEvent(this.id).subscribe(eventDetails => {
           //  this.event = eventDetails;
@@ -49,7 +51,11 @@ export class EventDetailsPage implements OnInit {
   }
 
   async invite() {
-    console.log("invite user");
+    const modal = await this.modalController.create({
+      component: InvitePage,
+      componentProps: { participants: this.participants, eventId: this.id }
+    });
+    return await modal.present();
   }
 
   async vote() {

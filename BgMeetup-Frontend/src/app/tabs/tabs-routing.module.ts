@@ -16,6 +16,10 @@ const routes: Routes = [
         loadChildren: () => import('../collection/collection.module').then(m => m.CollectionPageModule)
       },
       {
+        path: 'friends',
+        loadChildren: () => import('../friends/friends.module').then(m => m.FriendsPageModule)
+      },
+      {
         path: 'events-list',
         loadChildren: () => import('../events-list/events-list.module').then(m => m.EventsListPageModule)
       },
