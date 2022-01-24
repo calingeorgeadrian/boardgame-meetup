@@ -17,6 +17,7 @@ export class VoteGamesPage implements OnInit {
   games: any[] = [];
   eventId: any;
   participants: EventParticipantModel[] = [];
+  actionType: number = 0;
 
   constructor(private navParams: NavParams,
     public viewCtrl: ModalController,
@@ -25,6 +26,7 @@ export class VoteGamesPage implements OnInit {
     private bggService: BGGService,
     private userService: UserService) {
     this.eventId = navParams.get('eventId');
+    this.actionType = navParams.get('actionType');
   }
 
   ngOnInit() {
@@ -51,7 +53,6 @@ export class VoteGamesPage implements OnInit {
   }
 
   vote() {
-    console.log(this.games);
     var selectedGames = [];
     this.games.forEach(owner => {
       owner.games.forEach(g => {
@@ -66,8 +67,35 @@ export class VoteGamesPage implements OnInit {
         }
       });
     });
-    console.log(selectedGames);
     var saveResult = this.eventService.submitVotes(selectedGames, this.globals.user.id);
+    if (saveResult.result) {
+      this.dismiss();
+    }
+
+    //this.eventService.submitProposals(selectedGames, this.globals.user.id).subscribe(
+    //  saveResult => {
+    //    if (saveResult.result) {
+    //      this.dismiss();
+    //    }
+    //  });
+  }
+
+  choose() {
+    var selectedGames = [];
+    this.games.forEach(owner => {
+      owner.games.forEach(g => {
+        if (g.isSelected) {
+          console.log(g);
+          var v = new VoteModel();
+          v.eventId = this.eventId;
+          v.ownerId = g.ownerId;
+          v.gameId = g.gameId;
+          v.voterId = this.globals.user.id;
+          selectedGames.push(v);
+        }
+      });
+    });
+    var saveResult = this.eventService.chooseGames(selectedGames, this.eventId);
     if (saveResult.result) {
       this.dismiss();
     }

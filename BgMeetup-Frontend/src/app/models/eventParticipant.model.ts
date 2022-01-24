@@ -7,4 +7,5 @@ export class EventParticipantModel {
   email: string;
   bggUsername: string;
   status: number;
+  checkIn: boolean;
 }

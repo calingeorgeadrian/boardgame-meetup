@@ -1,5 +1,7 @@
 {
   "name": "BgMeetup-Frontend",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
