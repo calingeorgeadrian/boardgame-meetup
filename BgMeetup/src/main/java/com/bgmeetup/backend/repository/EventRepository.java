@@ -27,13 +27,13 @@ public class EventRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public Optional<EventDto> get(String id) {
+    public Optional<EventDto> get(String eventId) {
         String sql = "SELECT * FROM event WHERE id = ?";
         RowMapper<EventDto> mapper = getEventRowMapper();
-        return jdbcTemplate.query(sql, mapper, id).stream().findFirst();
+        return jdbcTemplate.query(sql, mapper, eventId).stream().findFirst();
     }
 
-    public List<EventDto> getAll() {
+    public List<EventDto> getAll(String userId) {
         String sql = "SELECT * FROM event";
         RowMapper<EventDto> mapper = getEventRowMapper();
         return jdbcTemplate.query(sql, mapper);
@@ -50,7 +50,7 @@ public class EventRepository {
             preparedStatement.setString(2, event.getHostId().toString());
             preparedStatement.setString(3, event.getTitle());
             preparedStatement.setString(4, event.getLocation());
-            preparedStatement.setInt(5, event.getRequiredNumberOfPlayers());
+            preparedStatement.setInt(5, event.getReqNumberOfPlayers());
             preparedStatement.setTimestamp(6, Timestamp.valueOf(event.getDate()));
             return preparedStatement;
         }, keyHolder);
@@ -78,17 +78,20 @@ public class EventRepository {
         String sql = "SELECT * FROM event_participant WHERE eventId = ?";
         RowMapper<EventParticipantDto> mapper = getEventParticipantRowMapper();
         return jdbcTemplate.query(sql, mapper, eventId);
-
     }
 
     private RowMapper<EventDto> getEventRowMapper() {
         return (resultSet, i) -> new EventDto(
                 UUID.fromString(resultSet.getString("id")),
                 UUID.fromString(resultSet.getString("hostId")),
+                "",
                 resultSet.getString("title"),
                 resultSet.getString("location"),
-                resultSet.getInt("requiredNumberOfPlayers"),
-                resultSet.getObject("datePlaced", LocalDateTime.class)
+                resultSet.getInt("reqNumberOfPlayers"),
+                resultSet.getObject("date", LocalDateTime.class),
+                "",
+                0,
+                0
         );
     }
 
@@ -96,6 +99,8 @@ public class EventRepository {
         return (resultSet, i) -> new EventParticipantDto(
                 UUID.fromString(resultSet.getString("eventId")),
                 UUID.fromString(resultSet.getString("participantId")),
+                UUID.fromString(resultSet.getString("inviterId")),
+                "",
                 ""
         );
     }

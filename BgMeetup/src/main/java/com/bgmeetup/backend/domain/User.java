@@ -2,7 +2,6 @@ package com.bgmeetup.backend.domain;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -11,11 +10,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @EqualsAndHashCode
 @Builder
-public class Event {
+public class User {
     private UUID id;
-    private UUID hostId;
-    private String title;
+    private String email;
+    private String firstName;
+    private String lastName;
     private String location;
-    private Integer reqNumberOfPlayers;
-    private LocalDateTime date;
+    private byte[] passwordSalt;
+    private byte[] passwordHash;
 }

@@ -24,18 +24,18 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    @GetMapping(path = "/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/get/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public EventDto get(@PathVariable String eventId) {
         return eventService.get(eventId);
     }
 
-    @GetMapping(path = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<EventDto> getAll() {
-        return eventService.getAll();
+    @GetMapping(path = "/all/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<EventDto> getAll(@PathVariable String userId) {
+        return eventService.getAll(userId);
     }
 
     @PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EventDto> create(@Valid @RequestBody EventDto request) {
+    public ResponseEntity<EventDto> create(@@RequestBody EventDto request) {
         eventService.save(request);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

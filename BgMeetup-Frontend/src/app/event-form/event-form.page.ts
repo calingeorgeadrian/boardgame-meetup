@@ -43,20 +43,20 @@ export class EventFormPage implements OnInit {
 
   save() {
     this.event.hostId = this.globals.user.id;
-    var saveResult = this.eventService.saveEvent(this.event);
+    //var saveResult = this.eventService.saveEvent(this.event);
 
-    if (saveResult.result) {
-    this.presentToast();
-    this.dismiss();
-    }
+    //if (saveResult.result) {
+    //this.presentToast();
+    //this.dismiss();
+    //}
 
-    //this.eventService.saveEvent(this.event)
-    //  .subscribe(
-    //    saveResult => {
-    //      if (saveResult.result) {
-    //        this.presentToast();
-    //        this.dismiss();
-    //      }
-    //    });
+    this.eventService.saveEvent(this.event)
+      .subscribe(
+        saveResult => {
+          if (saveResult.result) {
+            this.presentToast();
+            this.dismiss();
+          }
+        });
   }
 }

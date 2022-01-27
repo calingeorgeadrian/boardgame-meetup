@@ -29,17 +29,17 @@ export class EventsListPage implements OnInit {
   }
 
   getEvents() {
-    this.events = this.eventService.getEvents(this.globals.user.id);
-    this.invites = this.events.filter(e => e.status == 0);
-    this.ownEvents = this.events.filter(e => e.status == 1);
-    this.otherEvents = this.events.filter(e => e.status != 0 && e.status != 1);
+    ////this.events = this.eventService.getEvents(this.globals.user.id);
+    //this.invites = this.events.filter(e => e.status == 0);
+    //this.ownEvents = this.events.filter(e => e.status == 1);
+    //this.otherEvents = this.events.filter(e => e.status != 0 && e.status != 1);
 
-    //this.eventService.getEvents(this.globals.user.id).subscribe(events => {
-    //  this.events = events;
-    //  this.invites = events.filter(e => e.status == 0);
-    //  this.ownEvents = events.filter(e => e.status == 1);
-    //  this.otherEvents = events.filter(e => e.status != 0 && e.status != 1);
-    //});
+    this.eventService.getEvents(this.globals.user.id).subscribe(events => {
+      this.events = events;
+      this.invites = events.filter(e => e.status == 0);
+      this.ownEvents = events.filter(e => e.status == 1);
+      this.otherEvents = events.filter(e => e.status != 0 && e.status != 1);
+    });
   }
 
   async presentToast(message, color) {

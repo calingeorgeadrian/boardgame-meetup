@@ -18,7 +18,7 @@ export class AuthenticationService {
     var currentService = this;
 
     var loginInfo = new UserModel();
-    loginInfo.id = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a3bbc";
+    loginInfo.id = "84aafcd9-9df7-4676-9499-fe0bf897bdab";
     loginInfo.firstName = "George";
     loginInfo.lastName = "Calin";
     loginInfo.email = "calingeorgeadrian98@gmail.com";

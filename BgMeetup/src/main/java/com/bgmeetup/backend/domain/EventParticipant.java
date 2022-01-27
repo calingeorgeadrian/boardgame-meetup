@@ -13,4 +13,5 @@ import java.util.UUID;
 public class EventParticipant {
     private UUID eventId;
     private UUID participantId;
+    private UUID inviterId;
 }

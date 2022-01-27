@@ -13,5 +13,7 @@ import java.util.UUID;
 public class EventParticipantDto {
     private UUID eventId;
     private UUID participantId;
+    private UUID inviterId;
     private String participantName;
+    private String inviterName;
 }

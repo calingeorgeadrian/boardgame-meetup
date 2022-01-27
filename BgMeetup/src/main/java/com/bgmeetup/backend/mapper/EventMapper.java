@@ -14,7 +14,7 @@ public interface EventMapper {
             @Mapping(target = "hostId", source = "dto.hostId"),
             @Mapping(target = "title", source = "dto.title"),
             @Mapping(target = "location", source = "dto.location"),
-            @Mapping(target = "requiredNumberOfPlayers", source = "dto.requiredNumberOfPlayers"),
+            @Mapping(target = "reqNumberOfPlayers", source = "dto.reqNumberOfPlayers"),
             @Mapping(target = "date", source = "dto.date")
     })
     Event toEntity(EventDto dto);
@@ -24,8 +24,8 @@ public interface EventMapper {
             @Mapping(target = "hostId", source = "entity.hostId"),
             @Mapping(target = "title", source = "entity.title"),
             @Mapping(target = "location", source = "entity.location"),
-            @Mapping(target = "requiredNumberOfPlayers", source = "entity.requiredNumberOfPlayers"),
-            @Mapping(target = "date", source = "entity.date"),
+            @Mapping(target = "reqNumberOfPlayers", source = "entity.reqNumberOfPlayers"),
+            @Mapping(target = "date", source = "entity.date")
     })
     EventDto toDto(Event entity);
 }

@@ -153,17 +153,17 @@ export class EventDetailsPage implements OnInit {
   }
 
   saveLocation() {
-    var saveResult = this.eventService.saveEvent(this.event);
-    if (saveResult.result) {
-      this.locationInputVisible = false;
-    }
+    //var saveResult = this.eventService.saveEvent(this.event);
+    //if (saveResult.result) {
+    //  this.locationInputVisible = false;
+    //}
 
-    //this.eventService.saveEvent(this.event)
-    //  .subscribe(
-    //    saveResult => {
-    //      if (saveResult.result) {
-    //        this.locationInputVisible = false;
-    //      }
-    //    });
+    this.eventService.saveEvent(this.event)
+      .subscribe(
+        saveResult => {
+          if (saveResult.result) {
+            this.locationInputVisible = false;
+          }
+        });
   }
 }

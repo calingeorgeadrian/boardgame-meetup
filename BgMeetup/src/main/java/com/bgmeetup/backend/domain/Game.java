@@ -11,11 +11,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @EqualsAndHashCode
 @Builder
-public class Event {
+public class Game {
     private UUID id;
-    private UUID hostId;
     private String title;
-    private String location;
-    private Integer reqNumberOfPlayers;
-    private LocalDateTime date;
+    private String description;
+    private Integer minPlayers;
+    private Integer maxPlayers;
+    private Integer playingTime;
 }
