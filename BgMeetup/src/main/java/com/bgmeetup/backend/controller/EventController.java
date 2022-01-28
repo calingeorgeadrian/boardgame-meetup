@@ -35,7 +35,7 @@ public class EventController {
     }
 
     @PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EventDto> create(@@RequestBody EventDto request) {
+    public ResponseEntity<EventDto> create(@RequestBody EventDto request) {
         eventService.save(request);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -45,7 +45,7 @@ public class EventController {
         eventService.delete(eventId);
     }
 
-    @PostMapping(path = "/addParticipant", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/invite", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<EventParticipantDto> add(@Valid @RequestBody EventParticipantDto request) {
         eventService.addEventParticipant(request);
         return new ResponseEntity<>(HttpStatus.CREATED);

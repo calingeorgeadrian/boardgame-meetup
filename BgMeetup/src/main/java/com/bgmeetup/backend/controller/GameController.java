@@ -23,7 +23,7 @@ public class GameController {
         this.gameService = gameService;
     }
 
-    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GameDto> get(@PathVariable String id) {
         GameDto game = gameService.get(id);
         return new ResponseEntity<>(game, HttpStatus.OK);
