@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { UserLogin } from '../models/userLogin.model';
+import { AuthenticationService } from '../services/authentication.service';
 import { UserService } from '../services/user.service';
 
 @Component({
@@ -14,7 +15,7 @@ export class RegisterPage implements OnInit {
 
   constructor(private router: Router,
     public toastController: ToastController,
-    private userService: UserService) {
+    private authService: AuthenticationService) {
   }
 
   ngOnInit() {
@@ -30,24 +31,17 @@ export class RegisterPage implements OnInit {
   }
 
   logForm() {
-    this.presentToast();
-    this.router.navigate(['/login'], { replaceUrl: true });
+    this.authService.registerUser(this.userLogin)
+      .subscribe(
+        saveResult => {
+          if (saveResult.result) {
+            this.presentToast();
+            this.router.navigate(['/login'], { replaceUrl: true });
+          }
+        });
   }
 
   register() {
-    var currentComponent = this;
-    var user = this.userLogin;
-    var saveResult = this.userService.registerUser(this.userLogin);
-      if (saveResult.result) {
-        this.router.navigate(['/login'], { replaceUrl: true });
-      }
-
-    //this.userService.registerUser(this.userLogin)
-    //  .subscribe(
-    //    saveResult => {
-    //      if (saveResult.result) {
-    //        this.router.navigate(['/login'], { replaceUrl: true });
-    //      }
-    //    });
+    this.logForm();
   }
 }

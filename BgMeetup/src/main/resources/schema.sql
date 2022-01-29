@@ -17,8 +17,10 @@ CREATE TABLE `event_participant` (
   `eventId` varchar(36) NOT NULL,
   `participantId` varchar(36) NOT NULL,
   `inviterId` varchar(36) NOT NULL,
-  PRIMARY KEY (`eventId`,`participantId`)
+  `status` int(11) NOT NULL,
+  PRIMARY KEY (`eventId`,`participantId`,`inviterId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 CREATE TABLE `user` (
   `id` varchar(36) CHARACTER SET utf8 NOT NULL,
@@ -26,6 +28,7 @@ CREATE TABLE `user` (
   `firstName` varchar(128) CHARACTER SET utf8 NOT NULL,
   `lastName` varchar(128) CHARACTER SET utf8 NOT NULL,
   `location` varchar(128) CHARACTER SET utf8 DEFAULT NULL,
+  `bggUsername` varchar(128) CHARACTER SET utf8 DEFAULT NULL,
   `passwordHash` varbinary(128) NOT NULL,
   `passwordSalt` varbinary(128) NOT NULL,
   PRIMARY KEY (`id`)

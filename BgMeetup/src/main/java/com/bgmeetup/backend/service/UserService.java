@@ -1,6 +1,7 @@
 package com.bgmeetup.backend.service;
 
 import com.bgmeetup.backend.domain.User;
+import com.bgmeetup.backend.dto.SaveResult;
 import com.bgmeetup.backend.dto.UserDto;
 import com.bgmeetup.backend.exceptions.EntityNotFoundException;
 import com.bgmeetup.backend.mapper.UserMapper;
@@ -24,8 +25,7 @@ public class UserService {
         return userRepository.get(id).orElseThrow(()-> new EntityNotFoundException("User"));
     }
 
-    public UserDto update(User user) {
-        User updatedUser = userRepository.update(user);
-        return userMapper.toDto(updatedUser);
+    public SaveResult update(User user) {
+        return userRepository.update(user);
     }
 }

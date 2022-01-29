@@ -19,41 +19,16 @@ export class UserService {
     private http: HttpClient,
     public globals: Globals) { }
 
-  registerUser(userLogin: UserLogin) {
-    var saveResult = new SaveResult();
-    saveResult.result = true;
-    saveResult.errors = null;
-
-    return saveResult;
-    //return this.http.post<any>(environment.apiUrl + '/users/RegisterUser', userLogin)
-    //  .pipe(map(returnValue => {
-    //    return returnValue;
-    //  }));
-  }
-
-  saveUser(userModel: UserModel) {
+  update(userModel: UserModel) {
     var currentService = this;
-    localStorage.setItem('currentLoginInfo', JSON.stringify(userModel));
-    sessionStorage.setItem('currentLoginInfo', JSON.stringify(userModel));
+    return this.http.post<any>(environment.apiUrl + '/users/update', userModel)
+      .pipe(returnValue => {
+        localStorage.setItem('currentLoginInfo', JSON.stringify(userModel));
+        sessionStorage.setItem('currentLoginInfo', JSON.stringify(userModel));
 
-    currentService.globals.user = userModel;
-    var saveResult = new SaveResult();
-    saveResult.result = true;
-    saveResult.errors = null;
-
-    return saveResult;
-
-    //let formData: FormData = new FormData();
-    //formData.append('userDetails', JSON.stringify(userModel));
-
-    //return this.http.post<any>(environment.apiUrl + '/users/SaveUserAsync', formData)
-    //  .pipe(returnValue => {
-    //    localStorage.setItem('currentLoginInfo', JSON.stringify(userModel));
-    //    sessionStorage.setItem('currentLoginInfo', JSON.stringify(userModel));
-
-    //    currentService.globals.user = userModel;
-    //    return returnValue;
-    //  });
+        currentService.globals.user = userModel;
+        return returnValue;
+      });
   }
 
   //getUser(id: any): Observable<UserModel> {

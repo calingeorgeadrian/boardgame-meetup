@@ -33,22 +33,19 @@ export class LoginPage implements OnInit {
   }
 
   logForm() {
-    this.presentToast();
-    this.authenticationService.login(this.userLogin);
-    console.log(this.globals);
-    this.router.navigate(['/tabs/profile'], { replaceUrl: true });
+    this.authenticationService.login(this.userLogin)
+      .pipe(first())
+      .subscribe(
+        data => {
+          if (data) {
+            console.log(this.globals);
+            this.presentToast();
+            this.router.navigate(['/tabs/profile'], { replaceUrl: true });
+          }
+        });
   }
 
   login() {
-    this.authenticationService.login(this.userLogin);
-    this.router.navigate(['/tabs/profile'], { replaceUrl: true });
-    //this.authenticationService.login(this.userLogin)
-    //  .pipe(first())
-    //  .subscribe(
-    //    data => {
-    //      if (data) {
-    //        this.router.navigate(['/tabs/profile'], { replaceUrl: true });
-    //      }
-    //    });
+    this.logForm();
   }
 }

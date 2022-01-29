@@ -14,36 +14,28 @@ export class AuthenticationService {
     private http: HttpClient,
     public globals: Globals) { }
 
+  registerUser(userLogin: UserLogin) {
+    return this.http.post<any>(environment.apiUrl + '/auth/register', userLogin)
+      .pipe(map(returnValue => {
+        return returnValue;
+      }));
+  }
+
   login(userLogin: UserLogin) {
     var currentService = this;
 
-    var loginInfo = new UserModel();
-    loginInfo.id = "84aafcd9-9df7-4676-9499-fe0bf897bdab";
-    loginInfo.firstName = "George";
-    loginInfo.lastName = "Calin";
-    loginInfo.email = "calingeorgeadrian98@gmail.com";
-    loginInfo.bggUsername = "RoyalFlush37";
-    loginInfo.location = "Tulcea";
+    return this.http.post<any>(environment.apiUrl + '/auth/login', userLogin)
+      .pipe(map(loginInfo => {
 
-    localStorage.setItem('currentLoginInfo', JSON.stringify(loginInfo));
-    sessionStorage.setItem('currentLoginInfo', JSON.stringify(loginInfo));
+        if (loginInfo) {
+          localStorage.setItem('currentLoginInfo', JSON.stringify(loginInfo));
+          sessionStorage.setItem('currentLoginInfo', JSON.stringify(loginInfo));
 
-    currentService.globals.user = loginInfo;
+          currentService.globals.user = loginInfo;
+        }
 
-    return loginInfo;
-
-    //return this.http.post<any>(environment.apiUrl + '/authentication/Authenticate', userLogin)
-    //  .pipe(map(loginInfo => {
-
-    //    if (loginInfo) {
-    //      localStorage.setItem('currentLoginInfo', JSON.stringify(loginInfo));
-    //      sessionStorage.setItem('currentLoginInfo', JSON.stringify(loginInfo));
-
-    //      currentService.globals.user = loginInfo;
-    //    }
-
-    //    return loginInfo;
-    //  }));
+        return loginInfo;
+      }));
   }
 
   logout() {

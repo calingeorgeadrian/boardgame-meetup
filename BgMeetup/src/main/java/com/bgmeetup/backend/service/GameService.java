@@ -42,8 +42,4 @@ public class GameService {
         Game game = gameMapper.toEntity(request);
         gameRepository.update(game);
     }
-
-    public void delete(String id) {
-        gameRepository.delete(id);
-    }
 }

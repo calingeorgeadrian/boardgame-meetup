@@ -31,6 +31,23 @@
       </ion-row>
     </ion-card>
 
+    <ion-card *ngIf="!isAttending">
+      <ion-item>
+        <ion-label><strong>You are not participating in this event.</strong></ion-label>
+      </ion-item>
+      <ion-row>
+        <ion-col>
+          <ion-card-content>
+            <div style="text-align: center;">
+              <div>
+                <ion-button fill="solid" color="success" slot="end" (click)="attend()">Attend</ion-button>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-col>
+      </ion-row>
+    </ion-card>
+
     <ion-item>
       <!--<ion-avatar slot="start">
       <img src="{{eventhost.image}}">
@@ -48,7 +65,7 @@
       </ion-icon>
       <ion-label>
         <h2><strong>Date and time</strong></h2>
-        <h3>{{event.date | date:'MMM dd, yyyy, HH:mm'}}</h3>
+        <h3>{{event.dateString}}</h3>
       </ion-label>
     </ion-item>
     <ion-item>
@@ -80,7 +97,7 @@
       <!--<ion-avatar slot="start">
         <img src="{{item.image}}">
       </ion-avatar>-->
-      <ion-label>{{item.name}}</ion-label>
+      <ion-label>{{item.participantName}}</ion-label>
       <ion-badge color="primary" slot="end" *ngIf="item.participantId == event.hostId">Host</ion-badge>
       <ion-badge color="warning" slot="end" *ngIf="item.status == 0 && item.participantId != event.hostId">Pending</ion-badge>
       <ion-badge color="success" slot="end" *ngIf="item.status == 1 && item.participantId != event.hostId">Accepted</ion-badge>

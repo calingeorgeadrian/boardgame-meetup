@@ -52,9 +52,9 @@ export class InvitePage implements OnInit {
     var participant = new EventParticipantModel();
     participant.email = this.email;
     participant.eventId = this.eventId;
-    participant.invitedById = this.globals.user.id;
+    participant.inviterId = this.globals.user.id;
     participant.status = 0;
-    participant.name = this.email;
+    participant.participantName = this.email;
 
     var saveResult = this.eventService.sendEventInvitation(participant);
     if (saveResult.result) {
@@ -79,9 +79,9 @@ export class InvitePage implements OnInit {
     participant.email = friend.email;
     participant.eventId = this.eventId;
     participant.participantId = friend.userId;
-    participant.invitedById = this.globals.user.id;
+    participant.inviterId = this.globals.user.id;
     participant.status = 0;
-    participant.name = friend.name;
+    participant.participantName = friend.name;
 
     var saveResult = this.eventService.sendEventInvitation(participant);
     if (saveResult.result) {

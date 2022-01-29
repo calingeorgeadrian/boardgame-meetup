@@ -16,6 +16,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String location;
+    private String bggUsername;
     private byte[] passwordSalt;
     private byte[] passwordHash;
 }

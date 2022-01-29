@@ -11,6 +11,6 @@
     "\\src\\app\\vote-games",
     "\\src\\environments"
   ],
-  "SelectedNode": "\\src\\app\\event-form\\event-form.page.ts",
+  "SelectedNode": "\\src\\app\\services\\bgg.service.ts",
   "PreviewInSolutionExplorer": false
 }

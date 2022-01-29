@@ -1,5 +1,6 @@
 package com.bgmeetup.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import javax.validation.constraints.Min;
@@ -26,8 +27,9 @@ public class EventDto implements Serializable {
     private String location;
     @Min(value = 2, message = "Minimum number of players should not be less than 2")
     private Integer reqNumberOfPlayers;
-    @NotNull
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssz")
     private LocalDateTime date;
+    private String dateString;
     private String invitedBy;
     private Integer status;
     private Integer participantsCount;

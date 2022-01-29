@@ -44,9 +44,4 @@ public class GameController {
     public void update(@Valid @RequestBody GameDto request) {
         gameService.update(request);
     }
-
-    @DeleteMapping(path = "/delete/{id}")
-    public void delete(@PathVariable String id) {
-        gameService.delete(id);
-    }
 }

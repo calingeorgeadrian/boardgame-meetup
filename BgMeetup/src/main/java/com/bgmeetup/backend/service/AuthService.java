@@ -1,6 +1,7 @@
 package com.bgmeetup.backend.service;
 
 import com.bgmeetup.backend.domain.User;
+import com.bgmeetup.backend.dto.SaveResult;
 import com.bgmeetup.backend.dto.UserDto;
 import com.bgmeetup.backend.dto.UserLoginDto;
 import com.bgmeetup.backend.exceptions.EntityNotFoundException;
@@ -31,7 +32,7 @@ public class AuthService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void register(UserLoginDto request) {
+    public SaveResult register(UserLoginDto request) {
         User user = userMapper.toEntity(request);
 
         SecureRandom random = new SecureRandom();
@@ -48,7 +49,7 @@ public class AuthService {
         } catch (InvalidKeySpecException e) {
             e.printStackTrace();
         }
-        userRepository.register(user);
+        return userRepository.register(user);
     }
 
     public UserDto login(UserLoginDto request) {

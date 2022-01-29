@@ -15,7 +15,8 @@ public interface UserMapper {
             @Mapping(target = "email", source = "dto.email"),
             @Mapping(target = "firstName", source = "dto.firstName"),
             @Mapping(target = "lastName", source = "dto.lastName"),
-            @Mapping(target = "location", source = "dto.location")
+            @Mapping(target = "location", source = "dto.location"),
+            @Mapping(target = "bggUsername", source = "dto.bggUsername")
     })
     User toEntity(UserDto dto);
 
@@ -31,7 +32,8 @@ public interface UserMapper {
             @Mapping(target = "email", source = "entity.email"),
             @Mapping(target = "firstName", source = "entity.firstName"),
             @Mapping(target = "lastName", source = "entity.lastName"),
-            @Mapping(target = "location", source = "entity.location")
+            @Mapping(target = "location", source = "entity.location"),
+            @Mapping(target = "bggUsername", source = "entity.bggUsername")
     })
     UserDto toDto(User entity);
 }

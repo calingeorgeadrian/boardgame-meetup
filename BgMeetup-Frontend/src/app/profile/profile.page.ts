@@ -23,10 +23,7 @@ export class ProfilePage implements OnInit {
   }
 
   ngOnInit() {
-    this.user = this.userService.getUser(this.globals.user.id);
-    //this.userService.getUser(this.globals.user.id).subscribe(userDetails => {
-    //  this.user = userDetails;
-    //});
+    this.user = this.globals.user;
   }
 
   editBGGUsername() {
@@ -34,18 +31,13 @@ export class ProfilePage implements OnInit {
   }
 
   saveBGGUsername() {
-    var saveResult = this.userService.saveUser(this.user);
-    if (saveResult.result) {
-      this.bggInputVisible = false;
-    }
-
-    //this.userService.saveUser(this.user)
-    //  .subscribe(
-    //    saveResult => {
-    //      if (saveResult.result) {
-    //        this.bggInputVisible = false;
-    //      }
-    //    });
+    this.userService.update(this.user)
+      .subscribe(
+        saveResult => {
+          if (saveResult.result) {
+            this.bggInputVisible = false;
+          }
+        });
   }
 
   editLocation() {
@@ -53,18 +45,13 @@ export class ProfilePage implements OnInit {
   }
 
   saveLocation() {
-    var saveResult = this.userService.saveUser(this.user);
-    if (saveResult.result) {
-      this.locationInputVisible = false;
-    }
-
-    //this.userService.saveUser(this.user)
-    //  .subscribe(
-    //    saveResult => {
-    //      if (saveResult.result) {
-    //        this.locationInputVisible = false;
-    //      }
-    //    });
+    this.userService.update(this.user)
+      .subscribe(
+        saveResult => {
+          if (saveResult.result) {
+            this.locationInputVisible = false;
+          }
+        });
   }
 
   logout() {

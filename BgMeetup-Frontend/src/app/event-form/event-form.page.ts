@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController, ToastController } from '@ionic/angular';
+import { Router } from '@angular/router';
+import { IonDatetime, ModalController, ToastController } from '@ionic/angular';
 import { Globals } from '../globals';
 import { EventModel } from '../models/event.model';
 import { EventService } from '../services/event.service';
@@ -12,7 +13,8 @@ import { EventService } from '../services/event.service';
 export class EventFormPage implements OnInit {
   event: EventModel = new EventModel();
 
-  constructor(public viewCtrl: ModalController,
+  constructor(private router: Router,
+    public viewCtrl: ModalController,
     public globals: Globals,
     public toastController: ToastController,
     private eventService: EventService) {
@@ -21,7 +23,6 @@ export class EventFormPage implements OnInit {
   }
 
   ngOnInit() {
-
   }
 
   logForm() {
@@ -43,19 +44,13 @@ export class EventFormPage implements OnInit {
 
   save() {
     this.event.hostId = this.globals.user.id;
-    //var saveResult = this.eventService.saveEvent(this.event);
-
-    //if (saveResult.result) {
-    //this.presentToast();
-    //this.dismiss();
-    //}
-
-    this.eventService.saveEvent(this.event)
+    this.eventService.create(this.event)
       .subscribe(
         saveResult => {
           if (saveResult.result) {
             this.presentToast();
             this.dismiss();
+            this.router.navigate(['/tabs/events-list'], { replaceUrl: true });
           }
         });
   }

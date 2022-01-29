@@ -12,14 +12,16 @@ public interface EventParticipantMapper {
     @Mappings({
             @Mapping(target = "eventId", source = "dto.eventId"),
             @Mapping(target = "participantId", source = "dto.participantId"),
-            @Mapping(target = "inviterId", source = "dto.inviterId")
+            @Mapping(target = "inviterId", source = "dto.inviterId"),
+            @Mapping(target = "status", source = "dto.status")
     })
     EventParticipant toEntity(EventParticipantDto dto);
 
     @Mappings({
             @Mapping(target = "eventId", source = "entity.eventId"),
             @Mapping(target = "participantId", source = "entity.participantId"),
-            @Mapping(target = "inviterId", source = "entity.inviterId")
+            @Mapping(target = "inviterId", source = "entity.inviterId"),
+            @Mapping(target = "status", source = "entity.status")
     })
     EventParticipantDto toEntity(EventParticipant entity);
 }

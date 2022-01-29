@@ -69,11 +69,6 @@ public class GameRepository {
         });
     }
 
-    public void delete(String id) {
-        String sql = "DELETE FROM game WHERE id = ?";
-        jdbcTemplate.update(sql, id);
-    }
-
     private RowMapper<GameDto> getGameRowMapper() {
         return (resultSet, i) -> new GameDto(
                 UUID.fromString(resultSet.getString("id")),

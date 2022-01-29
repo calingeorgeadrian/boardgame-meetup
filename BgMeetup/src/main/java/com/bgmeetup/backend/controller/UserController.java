@@ -1,6 +1,7 @@
 package com.bgmeetup.backend.controller;
 
 import com.bgmeetup.backend.domain.User;
+import com.bgmeetup.backend.dto.SaveResult;
 import com.bgmeetup.backend.dto.UserDto;
 import com.bgmeetup.backend.mapper.UserMapper;
 import com.bgmeetup.backend.service.UserService;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/users")
 public class UserController {
     private UserService userService;
@@ -25,8 +27,8 @@ public class UserController {
         return userService.get(id);
     }
 
-    @PutMapping(path = "/update", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDto update(@Valid @RequestBody UserDto request) {
+    @PostMapping(path = "/update", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult update(@Valid @RequestBody UserDto request) {
         User user = userMapper.toEntity(request);
         return userService.update(user);
     }

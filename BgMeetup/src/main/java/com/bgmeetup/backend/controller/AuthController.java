@@ -1,5 +1,6 @@
 package com.bgmeetup.backend.controller;
 
+import com.bgmeetup.backend.dto.SaveResult;
 import com.bgmeetup.backend.dto.UserDto;
 import com.bgmeetup.backend.dto.UserLoginDto;
 import com.bgmeetup.backend.service.AuthService;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/auth")
 public class AuthController {
 
@@ -23,12 +25,11 @@ public class AuthController {
     }
 
     @PostMapping(path = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserLoginDto> register(@Valid @RequestBody UserLoginDto request) {
-        authService.register(request);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public SaveResult register(@Valid @RequestBody UserLoginDto request) {
+        return authService.register(request);
     }
 
-    @PutMapping(path = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDto login(@Valid @RequestBody UserLoginDto request) {
         return authService.login(request);
     }

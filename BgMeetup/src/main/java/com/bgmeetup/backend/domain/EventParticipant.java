@@ -14,4 +14,5 @@ public class EventParticipant {
     private UUID eventId;
     private UUID participantId;
     private UUID inviterId;
+    private Integer status;
 }

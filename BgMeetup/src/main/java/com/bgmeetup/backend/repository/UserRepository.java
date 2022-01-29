@@ -1,6 +1,7 @@
 package com.bgmeetup.backend.repository;
 
 import com.bgmeetup.backend.domain.User;
+import com.bgmeetup.backend.dto.SaveResult;
 import com.bgmeetup.backend.dto.UserDto;
 import com.bgmeetup.backend.dto.UserLoginDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,8 @@ public class UserRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public void register(User user) {
-        String sql = "INSERT INTO user VALUES(?, ?, ?, ?, ?, ?, ?)";
+    public SaveResult register(User user) {
+        String sql = "INSERT INTO user VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -29,10 +30,13 @@ public class UserRepository {
             preparedStatement.setString(3, user.getFirstName());
             preparedStatement.setString(4, user.getLastName());
             preparedStatement.setString(5, user.getLocation());
-            preparedStatement.setObject(6, user.getPasswordHash());
-            preparedStatement.setObject(7, user.getPasswordSalt());
+            preparedStatement.setString(6, user.getBggUsername());
+            preparedStatement.setObject(7, user.getPasswordHash());
+            preparedStatement.setObject(8, user.getPasswordSalt());
             return preparedStatement;
         });
+
+        return new SaveResult(true,null);
     }
 
     public Optional<UserDto> login(UserLoginDto userLogin) {
@@ -48,8 +52,8 @@ public class UserRepository {
     }
 
 
-    public User update(User user) {
-        String sql = "UPDATE user SET email = ?, firstName = ?, lastName = ?, location = ? WHERE id = ?";
+    public SaveResult update(User user) {
+        String sql = "UPDATE user SET email = ?, firstName = ?, lastName = ?, location = ?, bggUserName = ? WHERE id = ?";
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -57,10 +61,11 @@ public class UserRepository {
             preparedStatement.setString(2, user.getFirstName());
             preparedStatement.setString(3, user.getLastName());
             preparedStatement.setString(4, user.getLocation());
-            preparedStatement.setObject(5, user.getId().toString());
+            preparedStatement.setString(5, user.getBggUsername());
+            preparedStatement.setObject(6, user.getId().toString());
             return preparedStatement;
         });
-        return user;
+        return new SaveResult(true, null);
     }
 
     private RowMapper<UserDto> getUserRowMapper() {
@@ -70,6 +75,7 @@ public class UserRepository {
                 resultSet.getString("firstName"),
                 resultSet.getString("lastName"),
                 resultSet.getString("location"),
+                resultSet.getString("bggUsername"),
                 resultSet.getBytes("passwordSalt"),
                 resultSet.getBytes("passwordHash")
         );

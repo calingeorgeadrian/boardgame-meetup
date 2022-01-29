@@ -2,6 +2,7 @@ package com.bgmeetup.backend.controller;
 
 import com.bgmeetup.backend.dto.EventDto;
 import com.bgmeetup.backend.dto.EventParticipantDto;
+import com.bgmeetup.backend.dto.SaveResult;
 import com.bgmeetup.backend.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,11 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-@RequestMapping("/event")
+@RequestMapping("/events")
 public class EventController {
 
     private final EventService eventService;
@@ -34,25 +36,44 @@ public class EventController {
         return eventService.getAll(userId);
     }
 
-    @PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EventDto> create(@RequestBody EventDto request) {
-        eventService.save(request);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    @PostMapping(path = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult create(@RequestBody EventDto request) throws ParseException {
+        return eventService.create(request);
     }
 
-    @DeleteMapping(path = "/delete/{eventId}")
-    public void delete(@PathVariable String eventId) {
-        eventService.delete(eventId);
+    @PostMapping(path = "/update", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult update(@RequestBody EventDto request){
+        return eventService.update(request);
+    }
+
+    @GetMapping(path = "/join/eventId={eventId}/userId={userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult join(@PathVariable String eventId, @PathVariable String userId) {
+        return eventService.join(eventId, userId);
+    }
+
+    @GetMapping(path = "/leave/eventId={eventId}/userId={userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult leave(@PathVariable String eventId, @PathVariable String userId) {
+        return eventService.leave(eventId, userId);
+    }
+
+    @GetMapping(path = "/cancel/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult cancel(@PathVariable String eventId) {
+        return eventService.cancel(eventId);
+    }
+
+    @GetMapping(path = "/confirm/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult confirm(@PathVariable String eventId) {
+        return eventService.confirm(eventId);
     }
 
     @PostMapping(path = "/invite", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EventParticipantDto> add(@Valid @RequestBody EventParticipantDto request) {
-        eventService.addEventParticipant(request);
+    public ResponseEntity<EventParticipantDto> invite(@Valid @RequestBody EventParticipantDto request) {
+        eventService.invite(request);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping(path = "/getEventParticipants/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/getParticipants/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<EventParticipantDto> getEventParticipants(@PathVariable String eventId) {
-        return eventService.getEventParticipants(eventId);
+        return eventService.getParticipants(eventId);
     }
 }

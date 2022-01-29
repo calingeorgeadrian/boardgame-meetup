@@ -16,6 +16,7 @@ public class Event {
     private UUID hostId;
     private String title;
     private String location;
-    private Integer reqNumberOfPlayers;
     private LocalDateTime date;
+    private Integer reqNumberOfPlayers;
+    private Integer status;
 }

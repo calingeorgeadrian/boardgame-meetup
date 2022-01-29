@@ -4,16 +4,17 @@ import com.bgmeetup.backend.domain.Event;
 import com.bgmeetup.backend.domain.EventParticipant;
 import com.bgmeetup.backend.dto.EventDto;
 import com.bgmeetup.backend.dto.EventParticipantDto;
+import com.bgmeetup.backend.dto.SaveResult;
 import com.bgmeetup.backend.enums.InviteStatus;
 import com.bgmeetup.backend.exceptions.EntityNotFoundException;
 import com.bgmeetup.backend.mapper.EventMapper;
 import com.bgmeetup.backend.mapper.EventParticipantMapper;
 import com.bgmeetup.backend.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
 import java.util.List;
 
 @Service
@@ -33,45 +34,81 @@ public class EventService {
     }
 
     public EventDto get(String eventId) {
-        return eventRepository.get(eventId).orElseThrow(()-> new EntityNotFoundException("Event"));
+        var event = eventRepository.get(eventId).orElseThrow(()-> new EntityNotFoundException("Event"));
+        String dateString = event.getDate().toString();
+        var dateParts  = dateString.split("T");
+        event.setDateString(dateParts[0] + " " + dateParts[1]);
+        event.setDate(null);
+        var participants = eventRepository.getParticipants(event.getId().toString());
+        var participantsCount = participants.stream().count();
+        event.setParticipantsCount((int)participantsCount);
+        return event;
     }
 
     public List<EventDto> getAll(String userId) {
-        var events = eventRepository.getAll(userId);
+        var events = eventRepository.getAll();
         for (EventDto event : events) {
+            String dateString = event.getDate().toString();
+            var dateParts  = dateString.split("T");
+            event.setDateString(dateParts[0] + " " + dateParts[1]);
+            event.setDate(null);
             var host = userService.get(event.getHostId().toString());
             event.setHostName(host.getLastName() + " " + host.getFirstName());
-            var participants = eventRepository.getEventParticipants(event.getId().toString());
+            var participants = eventRepository.getParticipants(event.getId().toString());
             var participantsCount = participants.stream().count();
             event.setParticipantsCount((int)participantsCount);
-            var participant = participants.stream().filter(p -> p.getParticipantId().toString().equals(userId)).findAny();
+            var participant = participants.stream().filter(p -> p.getParticipantId().toString().equals(userId)).findFirst();
             if(participant.isPresent()){
-                var inviter = userService.get(participant.get().getInviterId().toString());
-                event.setInvitedBy(inviter.getLastName() + " " + inviter.getFirstName());
-                event.setStatus(InviteStatus.Invited.getValue());
+                event.setStatus(participant.get().getStatus());
             }
+            else
+                event.setStatus(InviteStatus.NotInvited.getValue());
         }
 
         return events;
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void save(EventDto request) {
+    public SaveResult create(EventDto request) throws ParseException {
         Event event = eventMapper.toEntity(request);
-        eventRepository.save(event);
-    }
-
-    public void delete(String id) {
-        eventRepository.delete(id);
+        return eventRepository.create(event);
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void addEventParticipant(EventParticipantDto request) {
-        EventParticipant participant = eventParticipantMapper.toEntity(request);
-        eventRepository.addEventParticipant(participant);
+    public SaveResult update(EventDto request) {
+        Event event = eventMapper.toEntity(request);
+        return eventRepository.update(event);
     }
 
-    public List<EventParticipantDto> getEventParticipants(String eventId) {
-        return eventRepository.getEventParticipants(eventId);
+    public SaveResult join(String eventId, String userId) {
+        return eventRepository.join(eventId, userId);
+    }
+
+    public SaveResult leave(String eventId, String userId) {
+        return eventRepository.leave(eventId, userId);
+    }
+
+    public SaveResult cancel(String eventId) {
+        return eventRepository.cancel(eventId);
+    }
+
+    public SaveResult confirm(String eventId) {
+        return eventRepository.confirm(eventId);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void invite(EventParticipantDto request) {
+        EventParticipant participant = eventParticipantMapper.toEntity(request);
+        eventRepository.invite(participant);
+    }
+
+    public List<EventParticipantDto> getParticipants(String eventId) {
+        var participants = eventRepository.getParticipants(eventId);
+        for (EventParticipantDto participant : participants) {
+            var user = userService.get(participant.getParticipantId().toString());
+            participant.setParticipantName(user.getLastName() + " " + user.getFirstName());
+        }
+
+        return participants;
     }
 }
