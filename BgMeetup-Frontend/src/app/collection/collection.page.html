@@ -5,15 +5,36 @@
     </ion-buttons>
     <ion-title>Collection</ion-title>
     {{title}}
+    <ion-button fill="solid" slot="end" (click)="import()">Import Collection</ion-button>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+
+  <ion-card *ngIf="collectionIsEmpty">
+    <ion-item>
+      <ion-label><strong>Your collection is empty!</strong></ion-label>
+    </ion-item>
+    <ion-row>
+      <ion-col>
+        <ion-card-content>
+          <div style="text-align: center;">
+            <div>
+              <ion-label color="danger">
+                Make sure to complete your BGG username on your profile and then import your collection.
+              </ion-label>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-col>
+    </ion-row>
+  </ion-card>
+
   <ion-list>
-    <ion-item (click)="view(item.id)"
+    <ion-item (click)="view(item.bggId)"
               *ngFor="let item of games">
       <ion-avatar slot="start">
-        <img src="{{item.image}}">
+        <img src="{{item.imageUrl}}">
       </ion-avatar>
       <ion-label>{{item.title}}</ion-label>
     </ion-item>

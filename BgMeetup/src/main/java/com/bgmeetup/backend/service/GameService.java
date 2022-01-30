@@ -2,6 +2,7 @@ package com.bgmeetup.backend.service;
 
 import com.bgmeetup.backend.domain.Game;
 import com.bgmeetup.backend.dto.GameDto;
+import com.bgmeetup.backend.dto.SaveResult;
 import com.bgmeetup.backend.exceptions.EntityNotFoundException;
 import com.bgmeetup.backend.mapper.GameMapper;
 import com.bgmeetup.backend.repository.GameRepository;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class GameService {
@@ -28,18 +28,13 @@ public class GameService {
         return gameRepository.get(id).orElseThrow(()-> new EntityNotFoundException("Game"));
     }
 
-    public List<GameDto> getAll() {
-        return gameRepository.getAll();
+    public List<GameDto> getCollection(String userId) {
+        return gameRepository.getCollection(userId);
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void create(GameDto request) {
-        Game game = gameMapper.toEntity(request);
-        gameRepository.save(game);
-    }
-
-    public void update(GameDto request) {
-        Game game = gameMapper.toEntity(request);
-        gameRepository.update(game);
+    public SaveResult importGames(String userId, List<GameDto> requests) {
+        List<Game> games = gameMapper.toEntityList(requests);
+        return gameRepository.importGames(userId, games);
     }
 }

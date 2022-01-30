@@ -3,14 +3,14 @@
     "",
     "\\src",
     "\\src\\app",
-    "\\src\\app\\event-form",
+    "\\src\\app\\collection",
+    "\\src\\app\\game-details",
     "\\src\\app\\models",
-    "\\src\\app\\propose-games",
-    "\\src\\app\\register",
+    "\\src\\app\\profile",
     "\\src\\app\\services",
-    "\\src\\app\\vote-games",
+    "\\src\\app\\tabs",
     "\\src\\environments"
   ],
-  "SelectedNode": "\\src\\app\\services\\bgg.service.ts",
+  "SelectedNode": "\\src\\app\\game-details\\game-details.page.html",
   "PreviewInSolutionExplorer": false
 }

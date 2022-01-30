@@ -11,7 +11,7 @@ export class BGGService {
     var games: GameModel[] = [];
 
     try {
-      this.req.open("GET", "https://www.boardgamegeek.com/xmlapi2/collection?username=" + username + "&subtype=boardgame&own=1", false);
+      this.req.open("GET", "https://www.boardgamegeek.com/xmlapi2/collection?username=" + username + "&subtype=boardgame&own=1&stats=1", false);
       this.req.send(null);
       var parser, xmlDoc;
 
@@ -20,28 +20,32 @@ export class BGGService {
 
       var items = xmlDoc.getElementsByTagName("item");
 
-      for (let i = 0; i < items.length; i++) {
-        var id = items[i].getAttribute('objectid');
-        var title = items[i].getElementsByTagName('name')[0].innerHTML;
-        var type = items[i].getAttribute('subtype');
-        var image = (items[i].getElementsByTagName("image")[0] != undefined ? items[i].getElementsByTagName("image")[0].childNodes[0].nodeValue : null);
-        var yearPublished = parseInt(items[i].getElementsByTagName("yearpublished")[0].innerHTML);
-        games.push({
-          id: id,
-          title: title,
-          type: type,
-          image: image,
-          description: null,
-          minPlayers: null,
-          maxPlayers: null,
-          minPlayTime: null,
-          maxPlayTime: null,
-          complexity: null,
-          year: yearPublished,
-          isSelected: false
-        });
+    for (let i = 0; i < items.length; i++) {
+      var id = items[i].getAttribute('objectid');
+      var type = items[i].getAttribute('subtype');
+      var title = items[i].getElementsByTagName('name')[0].innerHTML;
+      var year = (items[i].getElementsByTagName("yearpublished")[0] != undefined ? items[i].getElementsByTagName("yearpublished")[0].innerHTML : 2040);
+      var imageUrl = (items[i].getElementsByTagName("image")[0] != undefined ? items[i].getElementsByTagName("image")[0].childNodes[0].nodeValue : null);
+      var minPlayers = (items[i].getElementsByTagName("stats")[0].getAttribute('minplayers'));
+      var maxPlayers = (items[i].getElementsByTagName("stats")[0].getAttribute('maxplayers'));
+      var minPlayingTime = (items[i].getElementsByTagName("stats")[0].getAttribute('minplaytime') != undefined ? items[i].getElementsByTagName("stats")[0].getAttribute('minplaytime') : 0);
+      var maxPlayingTime = (items[i].getElementsByTagName("stats")[0].getAttribute('maxplaytime') != undefined ? items[i].getElementsByTagName("stats")[0].getAttribute('maxplaytime') : 0);
+      games.push({
+        id: null,
+        bggId: id,
+        title: title,
+        type: type,
+        imageUrl: imageUrl,
+        description: null,
+        minPlayers: minPlayers,
+        maxPlayers: maxPlayers,
+        minPlayTime: minPlayingTime,
+        maxPlayTime: maxPlayingTime,
+        complexity: 0,
+        year: year,
+        isSelected: false
+      });
       }
-
     }
     catch (error) {
       console.log(error);
@@ -62,10 +66,10 @@ export class BGGService {
       parser = new DOMParser();
       xmlDoc = parser.parseFromString(this.req.responseText, "text/xml");
 
-      game.id = xmlDoc.getElementsByTagName("item")[0].getAttribute('id');
+      game.bggId = xmlDoc.getElementsByTagName("item")[0].getAttribute('id');
       game.title = xmlDoc.getElementsByTagName("name")[0].getAttribute('value');
       game.type = xmlDoc.getElementsByTagName("item")[0].getAttribute('type');
-      game.image = xmlDoc.getElementsByTagName("image")[0].childNodes[0].nodeValue;
+      game.imageUrl = xmlDoc.getElementsByTagName("image")[0].childNodes[0].nodeValue;
       game.description = xmlDoc.getElementsByTagName("description")[0].innerHTML;
       game.minPlayers = xmlDoc.getElementsByTagName("minplayers")[0].getAttribute('value');
       game.maxPlayers = xmlDoc.getElementsByTagName("maxplayers")[0].getAttribute('value');

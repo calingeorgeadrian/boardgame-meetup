@@ -123,7 +123,7 @@ export class EventService {
       var game = new ProposedGameModel();
       game.gameId = g.id;
       game.title = g.title;
-      game.image = g.image;
+      game.image = g.imageUrl;
       game.ownerId = proposers[Math.floor(Math.random() * proposers.length)].id;
       game.proposerId = proposer.id;
       game.proposerName = proposer.name;
@@ -153,7 +153,7 @@ export class EventService {
       var game = new ProposedGameModel();
       game.gameId = g.id;
       game.title = g.title;
-      game.image = g.image;
+      game.image = g.imageUrl;
       game.ownerId = proposers[Math.floor(Math.random() * proposers.length)].id;
       game.proposerId = proposer.id;
       game.proposerName = proposer.name;

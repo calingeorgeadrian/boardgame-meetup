@@ -1,6 +1,6 @@
 export class ProposedGameModel {
   id: string;
-  gameId: number;
+  gameId: string;
   title: string;
   image: any;
   eventId: string;

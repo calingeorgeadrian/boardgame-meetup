@@ -1,6 +1,7 @@
 package com.bgmeetup.backend.controller;
 
 import com.bgmeetup.backend.dto.GameDto;
+import com.bgmeetup.backend.dto.SaveResult;
 import com.bgmeetup.backend.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-@RequestMapping("/game")
+@RequestMapping("/games")
 public class GameController {
 
     private final GameService gameService;
@@ -29,19 +30,13 @@ public class GameController {
         return new ResponseEntity<>(game, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<GameDto> getAll() {
-        return gameService.getAll();
+    @GetMapping(path = "/collection/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<GameDto> getAll(@PathVariable String userId) {
+        return gameService.getCollection(userId);
     }
 
-    @PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GameDto> create(@Valid @RequestBody GameDto request) {
-        gameService.create(request);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-
-    @PutMapping(path = "/update", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public void update(@Valid @RequestBody GameDto request) {
-        gameService.update(request);
+    @PostMapping(path = "/import/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult importGames(@PathVariable String userId, @Valid @RequestBody List<GameDto> requests) {
+        return gameService.importGames(userId, requests);
     }
 }

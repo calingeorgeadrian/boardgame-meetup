@@ -35,11 +35,25 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `game` (
-  `id` varchar(36) CHARACTER SET utf8 NOT NULL,
+  `id` varchar(36) NOT NULL,
+  `bggId` bigint(20) DEFAULT NULL,
   `title` varchar(128) CHARACTER SET utf8 NOT NULL,
+  `type` varchar(128) CHARACTER SET utf8 NOT NULL,
+  `imageUrl` varchar(1024) DEFAULT NULL,
   `description` mediumtext CHARACTER SET utf8 DEFAULT NULL,
-  `minPlayers` int(11) NOT NULL,
-  `maxPlayers` int(11) NOT NULL,
-  `playingTime` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=329 DEFAULT CHARSET=utf8mb4;
+  `minPlayers` int(11) DEFAULT NULL,
+  `maxPlayers` int(11) DEFAULT NULL,
+  `minPlayTime` int(11) DEFAULT NULL,
+  `maxPlayTime` int(11) DEFAULT NULL,
+  `complexity` float DEFAULT NULL,
+  `year` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_bgg_id` (`bggId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `collection` (
+  `userId` varchar(36) NOT NULL,
+  `gameBggId` bigint(20) NOT NULL,
+  PRIMARY KEY (`userId`,`gameBggId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

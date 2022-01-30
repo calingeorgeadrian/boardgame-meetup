@@ -1,8 +1,9 @@
 export class GameModel {
-  id: number;
+  id: string;
+  bggId: number;
   title: string;
   type: string;
-  image: any;
+  imageUrl: string;
   description: string;
   minPlayers: number;
   maxPlayers: number;
