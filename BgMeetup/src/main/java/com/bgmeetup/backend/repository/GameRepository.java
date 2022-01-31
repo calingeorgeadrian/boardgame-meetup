@@ -2,7 +2,9 @@ package com.bgmeetup.backend.repository;
 
 import com.bgmeetup.backend.domain.CollectionItem;
 import com.bgmeetup.backend.domain.Game;
+import com.bgmeetup.backend.domain.ProposedGame;
 import com.bgmeetup.backend.dto.GameDto;
+import com.bgmeetup.backend.dto.ProposedGameDto;
 import com.bgmeetup.backend.dto.SaveResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -132,6 +134,54 @@ public class GameRepository {
         });
     }
 
+    public SaveResult proposeGames(List<ProposedGame> games) {
+        String sql = "INSERT INTO proposed_game VALUES(?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE gameId = gameId";
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+            int i = 0;
+            for (ProposedGame game : games) {
+
+                preparedStatement.setObject(1, game.getEventId().toString());
+                preparedStatement.setObject(2, game.getGameId().toString());
+                preparedStatement.setObject(3, game.getOwnerId().toString());
+                preparedStatement.setObject(4, game.getProposerId().toString());
+
+                preparedStatement.addBatch();
+
+                i++;
+
+                if (i % 1000 == 0 || i == games.size()) {
+                    preparedStatement.executeBatch();
+                }
+            }
+
+            return preparedStatement;
+        });
+
+        return new SaveResult(true, null);
+    }
+
+    public SaveResult clearProposals(String eventId, String userId){
+        String sql = "DELETE FROM proposed_game WHERE eventId = ? and proposerId = ?";
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setObject(1, eventId);
+            preparedStatement.setObject(2, userId);
+            return preparedStatement;
+        });
+        return new SaveResult(true, null);
+    }
+
+    public List<ProposedGameDto> getProposedGames(String eventId) {
+        String sql = "SELECT * FROM proposed_game WHERE eventId = '" + eventId + "'";
+        RowMapper<ProposedGameDto> mapper = getProposedGameRowMapper();
+        return jdbcTemplate.query(sql, mapper);
+    }
+
     private RowMapper<GameDto> getGameRowMapper() {
         return (resultSet, i) -> new GameDto(
                 UUID.fromString(resultSet.getString("id")),
@@ -153,6 +203,20 @@ public class GameRepository {
         return (resultSet, i) -> new CollectionItem(
                 UUID.fromString(resultSet.getString("userId")),
                 resultSet.getLong("gameBggId")
+        );
+    }
+
+    private RowMapper<ProposedGameDto> getProposedGameRowMapper() {
+        return (resultSet, i) -> new ProposedGameDto(
+                UUID.fromString(resultSet.getString("eventId")),
+                UUID.fromString(resultSet.getString("gameId")),
+                UUID.fromString(resultSet.getString("ownerId")),
+                UUID.fromString(resultSet.getString("proposerId")),
+                0L,
+                "",
+                "",
+                "",
+                0
         );
     }
 }

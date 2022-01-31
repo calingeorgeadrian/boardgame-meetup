@@ -158,10 +158,10 @@
         </ion-row>
       </ion-grid>
     </ion-item>
-    <ion-item (click)="viewGame(item.gameId)"
+    <ion-item (click)="viewGame(item.bggId)"
               *ngFor="let item of proposedGames | slice:0:4; let i=index">
       <ion-avatar slot="start">
-        <img src="{{item.image}}">
+        <img src="{{item.imageUrl}}">
       </ion-avatar>
       <ion-label>{{item.title}}</ion-label>
       <ion-label style="text-align: end;">{{item.votes}}</ion-label>

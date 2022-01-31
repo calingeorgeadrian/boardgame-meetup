@@ -14,14 +14,14 @@
 
         <ion-item>
           <ion-avatar slot="start">
-            <img src="{{game.image}}">
+            <img src="{{game.imageUrl}}">
           </ion-avatar>
           <ion-label>{{game.title}}</ion-label>
           <ion-checkbox slot="end" [(ngModel)]="game.isSelected"></ion-checkbox>
         </ion-item>
 
         <ion-item-options side="end">
-          <ion-item-option color="primary" (click)="viewGame(game.id)">View</ion-item-option>
+          <ion-item-option color="primary" (click)="viewGame(game.bggId)">View</ion-item-option>
         </ion-item-options>
 
       </ion-item-sliding>

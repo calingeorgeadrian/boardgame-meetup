@@ -6,6 +6,7 @@ import { EventParticipantModel } from '../models/eventParticipant.model';
 import { VoteModel } from '../models/vote.model';
 import { BGGService } from '../services/bgg.service';
 import { EventService } from '../services/event.service';
+import { GameService } from '../services/game.service.';
 import { UserService } from '../services/user.service';
 
 @Component({
@@ -23,21 +24,23 @@ export class VoteGamesPage implements OnInit {
     public viewCtrl: ModalController,
     public globals: Globals,
     private eventService: EventService,
+    private gameService: GameService,
     private bggService: BGGService,
     private userService: UserService) {
     this.eventId = navParams.get('eventId');
     this.actionType = navParams.get('actionType');
+    this.participants = navParams.get('participants');
   }
 
   ngOnInit() {
-    var proposedGames = this.eventService.getEventProposedGames(this.eventId);
-    var proposers = [{ id: "49125c98-1aa6-4763-8e29-8de47b3b2512", name: "Calin George" }, { id: "df42cc31-c2c2-4fb2-9182-d601282e30ec", name: "Hirhui Ema" }, { id: "ed49c1cc-09d4-4f73-9a71-9d0035e616ce", name: "Matei Cristina" }]
-
-
-    proposers.forEach(p => {
-      var proposerGames = proposedGames.filter(g => g.proposerId == p.id);
-      this.games.push({ proposerId: p.id, proposer: p.name, games: proposerGames });
-    });
+    this.gameService.getProposedGames(this.eventId)
+    .subscribe(
+      proposedGames => {
+        this.participants.forEach(p => {
+          var proposerGames = proposedGames.filter(g => g.proposerId == p.participantId);
+          this.games.push({ proposerId: p.participantId, proposer: p.participantName, games: proposerGames });
+        });
+      });
   }
 
   async viewGame(id: any) {
@@ -67,7 +70,7 @@ export class VoteGamesPage implements OnInit {
         }
       });
     });
-    var saveResult = this.eventService.submitVotes(selectedGames, this.globals.user.id);
+    var saveResult = this.gameService.voteGames(selectedGames, this.globals.user.id);
     if (saveResult.result) {
       this.dismiss();
     }

@@ -10,6 +10,7 @@ import { EventParticipantModel } from '../models/eventParticipant.model';
 import { UserModel } from '../models/user.model';
 import { ProposeGamesPage } from '../propose-games/propose-games.page';
 import { EventService } from '../services/event.service';
+import { GameService } from '../services/game.service.';
 import { UserService } from '../services/user.service';
 import { VoteGamesPage } from '../vote-games/vote-games.page';
 
@@ -43,6 +44,7 @@ export class EventDetailsPage implements OnInit {
     public toastController: ToastController,
     public modalController: ModalController,
     private eventService: EventService,
+    private gameService: GameService,
     private userService: UserService) {
   }
 
@@ -66,18 +68,25 @@ export class EventDetailsPage implements OnInit {
       this.participants = participants;
 
       this.event.participantsCount = this.participants.filter(p => p.status == 1).length;
-      this.proposedGames = this.eventService.getEventProposedGames(this.id);
+      this.getProposedGames();
       //this.choosenGames = this.eventService.getEventChoosenGames(this.id);
-      console.log(this.participants);
       this.isInvited = this.participants.filter(p => p.participantId == this.globals.user.id && p.status == 0).length > 0;
       this.isAttending = this.participants.filter(p => p.participantId == this.globals.user.id && p.status == 1).length > 0;
       this.canProposeGames = this.choosenGames.length == 0;
-      this.canVoteGames = this.proposedGames.length > 0;
-      this.canChooseGames = this.proposedGames.filter(g => g.votes > 0).length > 0;
       this.canCheckIn = this.choosenGames.length > 0;
       this.canConfirmEvent = this.participants.filter(p => !p.checkedIn).length == 0;
       this.checkedIn = this.participants.filter(p => p.checkedIn && p.participantId == this.globals.user.id).length > 0;
     });
+  }
+
+  async getProposedGames() {
+    this.gameService.getProposedGames(this.id)
+      .subscribe(
+        proposedGames => {
+          this.proposedGames = proposedGames;
+          this.canVoteGames = this.proposedGames.length > 0;
+          this.canChooseGames = this.proposedGames.filter(g => g.votes > 0).length > 0;
+        });
   }
 
   async presentToast(message: string, color: string) {
@@ -184,7 +193,10 @@ export class EventDetailsPage implements OnInit {
   async propose() {
     const modal = await this.modalController.create({
       component: ProposeGamesPage,
-      componentProps: { eventId: this.event.id, participants: this.participants }
+      componentProps: { eventId: this.event.id, participants: this.participants.filter(p => p.status == 1) }
+    });
+    modal.onDidDismiss().then((data: any) => {
+      this.getProposedGames();
     });
     return await modal.present();
   }
@@ -192,7 +204,7 @@ export class EventDetailsPage implements OnInit {
   async vote() {
     const modal = await this.modalController.create({
       component: VoteGamesPage,
-      componentProps: { eventId: this.event.id, actionType: 0 }
+      componentProps: { eventId: this.event.id, actionType: 0, participants: this.participants.filter(p => p.status == 1) }
     });
     return await modal.present();
   }
@@ -200,7 +212,7 @@ export class EventDetailsPage implements OnInit {
   async choose() {
     const modal = await this.modalController.create({
       component: VoteGamesPage,
-      componentProps: { eventId: this.event.id, actionType: 1 }
+      componentProps: { eventId: this.event.id, actionType: 1, participants: this.participants.filter(p => p.status == 1) }
     });
     return await modal.present();
   }

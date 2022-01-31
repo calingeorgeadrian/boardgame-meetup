@@ -1,10 +1,13 @@
 package com.bgmeetup.backend.service;
 
 import com.bgmeetup.backend.domain.Game;
+import com.bgmeetup.backend.domain.ProposedGame;
 import com.bgmeetup.backend.dto.GameDto;
+import com.bgmeetup.backend.dto.ProposedGameDto;
 import com.bgmeetup.backend.dto.SaveResult;
 import com.bgmeetup.backend.exceptions.EntityNotFoundException;
 import com.bgmeetup.backend.mapper.GameMapper;
+import com.bgmeetup.backend.mapper.ProposedGameMapper;
 import com.bgmeetup.backend.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,11 +20,15 @@ public class GameService {
 
     private final GameMapper gameMapper;
     private final GameRepository gameRepository;
+    private final ProposedGameMapper proposedGameMapper;
+    private final UserService userService;
 
     @Autowired
-    public GameService(GameMapper gameMapper, GameRepository gameRepository) {
+    public GameService(GameMapper gameMapper, GameRepository gameRepository, ProposedGameMapper proposedGameMapper, UserService userService) {
         this.gameMapper = gameMapper;
         this.gameRepository = gameRepository;
+        this.proposedGameMapper = proposedGameMapper;
+        this.userService = userService;
     }
 
     public GameDto get(String id) {
@@ -36,5 +43,29 @@ public class GameService {
     public SaveResult importGames(String userId, List<GameDto> requests) {
         List<Game> games = gameMapper.toEntityList(requests);
         return gameRepository.importGames(userId, games);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public SaveResult proposeGames(String eventId, String userId, List<ProposedGameDto> requests) {
+        if(requests.size() > 0){
+            List<ProposedGame> games = proposedGameMapper.toEntityList(requests);
+            return gameRepository.proposeGames(games);
+        }
+        else
+            return gameRepository.clearProposals(eventId, userId);
+    }
+
+    public List<ProposedGameDto> getProposedGames(String eventId) {
+        var proposedGames = gameRepository.getProposedGames(eventId);
+        for (ProposedGameDto proposedGame : proposedGames) {
+            var game = gameRepository.get(proposedGame.getGameId().toString());
+            proposedGame.setBggId(game.get().getBggId());
+            proposedGame.setTitle(game.get().getTitle());
+            proposedGame.setImageUrl(game.get().getImageUrl());
+            var proposer = userService.get(proposedGame.getProposerId().toString());
+            proposedGame.setProposerName(proposer.getLastName() + " " + proposer.getFirstName());
+        }
+
+        return proposedGames;
     }
 }
