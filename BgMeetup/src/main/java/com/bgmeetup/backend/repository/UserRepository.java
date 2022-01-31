@@ -51,6 +51,12 @@ public class UserRepository {
         return jdbcTemplate.query(sql, mapper, id).stream().findFirst();
     }
 
+    public Optional<UserDto> getByEmail(String email) {
+        String sql = "SELECT * FROM user WHERE email = ?";
+        RowMapper<UserDto> mapper = getUserRowMapper();
+        return jdbcTemplate.query(sql, mapper, email).stream().findFirst();
+    }
+
 
     public SaveResult update(User user) {
         String sql = "UPDATE user SET email = ?, firstName = ?, lastName = ?, location = ?, bggUserName = ? WHERE id = ?";

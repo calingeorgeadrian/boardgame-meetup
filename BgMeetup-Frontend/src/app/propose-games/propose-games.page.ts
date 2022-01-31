@@ -32,7 +32,7 @@ export class ProposeGamesPage implements OnInit {
     this.participants.forEach(p => {
       if (p.status === 1 && p.bggUsername != null) {
         var userCollection = this.bggService.getUserCollection(p.bggUsername);
-        this.games.push({ ownerId: p.id, owner: p.participantName, games: userCollection });
+        this.games.push({ ownerId: p.participantId, owner: p.participantName, games: userCollection });
       }
     });
     this.games.sort(function (a, b) {

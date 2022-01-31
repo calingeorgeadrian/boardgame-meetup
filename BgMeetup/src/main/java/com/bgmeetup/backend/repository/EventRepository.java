@@ -39,7 +39,7 @@ public class EventRepository {
         return jdbcTemplate.query(sql, mapper);
     }
 
-    public SaveResult create(Event event) {
+    public UUID create(Event event) {
         String sql = "INSERT INTO event VALUES(?, ?, ?, ?, STR_TO_DATE(? ,'%Y-%m-%d %H:%i:%s'), ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -60,10 +60,7 @@ public class EventRepository {
             return preparedStatement;
         }, keyHolder);
 
-        var participant = new EventParticipant(eventId, event.getHostId(), event.getHostId(), InviteStatus.Accepted.getValue());
-        this.invite(participant);
-
-        return new SaveResult(true,null);
+        return eventId;
     }
 
 
@@ -80,7 +77,7 @@ public class EventRepository {
     }
 
     public SaveResult join(String eventId, String userId){
-        String sql = "INSERT INTO event_participant VALUES(?, ?, ?, ?)";
+        String sql = "INSERT INTO event_participant VALUES(?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -129,17 +126,55 @@ public class EventRepository {
         return new SaveResult(true, null);
     }
 
-    public void invite(EventParticipant eventParticipant){
-        String sql = "INSERT INTO event_participant VALUES(?, ?, ?, ?)";
+    public SaveResult invite(EventParticipant eventParticipant){
+        String sql = "INSERT INTO event_participant VALUES(?, ?, ?, ?, ?, ?)" +
+                     "ON DUPLICATE KEY UPDATE status = ?";
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setObject(1, eventParticipant.getEventId().toString());
             preparedStatement.setObject(2, eventParticipant.getParticipantId().toString());
             preparedStatement.setObject(3, eventParticipant.getInviterId().toString());
-            preparedStatement.setObject(4, eventParticipant.getStatus());
+            preparedStatement.setString(4, eventParticipant.getEmail());
+            preparedStatement.setInt(5, eventParticipant.getStatus());
+            preparedStatement.setBoolean(6, eventParticipant.isCheckedIn());
+            preparedStatement.setInt(7, eventParticipant.getStatus());
             return preparedStatement;
         });
+        return new SaveResult(true, null);
+    }
+
+    public SaveResult acceptInvitation(String eventId, String userId) {
+        String sql = "UPDATE event_participant SET status = ? WHERE eventId = ? && participantId = ?";
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setInt(1, InviteStatus.Accepted.getValue());
+            preparedStatement.setString(2, eventId);
+            preparedStatement.setString(3, userId);
+            return preparedStatement;
+        });
+        return new SaveResult(true, null);
+    }
+
+    public SaveResult declineInvitation(String eventId, String userId) {
+        String sql = "UPDATE event_participant SET status = ? WHERE eventId = ? && participantId = ?";
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setInt(1, InviteStatus.Refused.getValue());
+            preparedStatement.setString(2, eventId);
+            preparedStatement.setString(3, userId);
+            return preparedStatement;
+        });
+        return new SaveResult(true, null);
+    }
+
+    public Optional<EventParticipantDto> getParticipant(String eventId, String email) {
+        String sql = "SELECT * FROM event_participant WHERE eventId = '" + eventId +
+                     "' &&  email = '" + email + "'";
+        RowMapper<EventParticipantDto> mapper = getEventParticipantRowMapper();
+        return jdbcTemplate.query(sql, mapper).stream().findFirst();
     }
 
     public List<EventParticipantDto> getParticipants(String eventId){
@@ -169,9 +204,11 @@ public class EventRepository {
                 UUID.fromString(resultSet.getString("eventId")),
                 UUID.fromString(resultSet.getString("participantId")),
                 UUID.fromString(resultSet.getString("inviterId")),
-                resultSet.getInt("status"),
                 "",
-                ""
+                resultSet.getString("email"),
+                "",
+                resultSet.getInt("status"),
+                resultSet.getBoolean("checkedIn")
         );
     }
 }

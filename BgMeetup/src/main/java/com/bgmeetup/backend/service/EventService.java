@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.ParseException;
 import java.util.List;
 
 @Service
@@ -40,8 +39,8 @@ public class EventService {
         event.setDateString(dateParts[0] + " " + dateParts[1]);
         event.setDate(null);
         var participants = eventRepository.getParticipants(event.getId().toString());
-        var participantsCount = participants.stream().count();
-        event.setParticipantsCount((int)participantsCount);
+        var participantsCount = participants.size();
+        event.setParticipantsCount(participantsCount);
         return event;
     }
 
@@ -55,7 +54,7 @@ public class EventService {
             var host = userService.get(event.getHostId().toString());
             event.setHostName(host.getLastName() + " " + host.getFirstName());
             var participants = eventRepository.getParticipants(event.getId().toString());
-            var participantsCount = participants.stream().count();
+            var participantsCount = participants.stream().filter(p -> p.getStatus() == InviteStatus.Accepted.getValue()).count();
             event.setParticipantsCount((int)participantsCount);
             var participant = participants.stream().filter(p -> p.getParticipantId().toString().equals(userId)).findFirst();
             if(participant.isPresent()){
@@ -69,9 +68,12 @@ public class EventService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public SaveResult create(EventDto request) throws ParseException {
+    public SaveResult create(EventDto request) {
         Event event = eventMapper.toEntity(request);
-        return eventRepository.create(event);
+        var eventId = eventRepository.create(event);
+        var host = userService.get(request.getHostId().toString());
+        var participant = new EventParticipant(eventId, event.getHostId(), event.getHostId(), host.getEmail(), InviteStatus.Accepted.getValue(), false);
+        return eventRepository.invite(participant);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -97,16 +99,40 @@ public class EventService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void invite(EventParticipantDto request) {
+    public SaveResult invite(EventParticipantDto request) {
+        var dbParticipant = eventRepository.getParticipant(request.getEventId().toString(), request.getEmail());
+
+        if(request.getParticipantId() == null){
+            var user = userService.getByEmail(request.getEmail());
+            request.setParticipantId(user.getId());
+        }
+        else {
+            var user = userService.get(request.getParticipantId().toString());
+            request.setEmail(user.getEmail());
+        }
         EventParticipant participant = eventParticipantMapper.toEntity(request);
-        eventRepository.invite(participant);
+        if (dbParticipant.isPresent())
+            return eventRepository.acceptInvitation(request.getEventId().toString(), request.getParticipantId().toString());
+        else
+            return eventRepository.invite(participant);
+    }
+
+    public SaveResult acceptInvitation(String eventId, String userId) {
+        return eventRepository.acceptInvitation(eventId, userId);
+    }
+
+    public SaveResult declineInvitation(String eventId, String userId) {
+        return eventRepository.declineInvitation(eventId, userId);
     }
 
     public List<EventParticipantDto> getParticipants(String eventId) {
         var participants = eventRepository.getParticipants(eventId);
         for (EventParticipantDto participant : participants) {
             var user = userService.get(participant.getParticipantId().toString());
-            participant.setParticipantName(user.getLastName() + " " + user.getFirstName());
+            if(participant.getParticipantName() == null)
+                participant.setParticipantName(user.getEmail());
+            else
+                participant.setParticipantName(user.getLastName() + " " + user.getFirstName());
         }
 
         return participants;

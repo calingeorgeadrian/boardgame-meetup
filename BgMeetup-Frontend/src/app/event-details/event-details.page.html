@@ -9,21 +9,17 @@
 
 <ion-content>
   <ion-list>
-
-    <ion-card>
+    <ion-card *ngIf="isInvited">
       <ion-item>
-        <ion-label><strong>The games have been chosen!</strong></ion-label>
+        <ion-label><strong>You've been invited to participate in this event!</strong></ion-label>
       </ion-item>
       <ion-row>
         <ion-col>
           <ion-card-content>
             <div style="text-align: center;">
-              <div *ngIf="!checkedIn">
-                <ion-label>Check-in to confirm your participation to the event.</ion-label>
-                <ion-button fill="solid" color="success" slot="end" (click)="checkIn()">Check-In</ion-button>
-              </div>
-              <div *ngIf="checkedIn">
-                <ion-label color="success">You've already checked-in. Please wait for the event to be confirmed.</ion-label>
+              <div>
+                <ion-button fill="solid" color="success" slot="start" style="margin-left: 15px; margin-right: 15px;" (click)="acceptInvitation()">Accept</ion-button>
+                <ion-button fill="solid" color="danger" slot="end" style="margin-left: 15px; margin-right: 15px;" (click)="declineInvitation()">Decline</ion-button>
               </div>
             </div>
           </ion-card-content>
@@ -31,7 +27,7 @@
       </ion-row>
     </ion-card>
 
-    <ion-card *ngIf="!isAttending">
+    <ion-card *ngIf="!isAttending && !isInvited">
       <ion-item>
         <ion-label><strong>You are not participating in this event.</strong></ion-label>
       </ion-item>
@@ -41,6 +37,28 @@
             <div style="text-align: center;">
               <div>
                 <ion-button fill="solid" color="success" slot="end" (click)="attend()">Attend</ion-button>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-col>
+      </ion-row>
+    </ion-card>
+
+    <ion-card *ngIf="canCheckIn">
+      <ion-item>
+        <ion-label><strong>The games have been chosen!</strong></ion-label>
+      </ion-item>
+      <ion-row>
+        <ion-col>
+          <ion-card-content>
+            <div style="text-align: center;">
+              <div *ngIf="!checkedIn">
+                <ion-label>Check-in to confirm your participation to the event.</ion-label>
+                <br />
+                <ion-button fill="solid" color="success" slot="end" (click)="checkIn()">Check-In</ion-button>
+              </div>
+              <div *ngIf="checkedIn">
+                <ion-label color="success">You've already checked-in. Please wait for the event to be confirmed.</ion-label>
               </div>
             </div>
           </ion-card-content>
@@ -58,7 +76,7 @@
       </ion-label>
       <ion-button fill="solid" color="success" slot="end" (click)="confirm()" *ngIf="globals.user.id == event.hostId && canConfirmEvent">Confirm</ion-button>
       <ion-button fill="solid" color="danger" slot="end" (click)="cancel()" *ngIf="globals.user.id == event.hostId">Cancel</ion-button>
-      <ion-button fill="solid" color="danger" slot="end" (click)="leave()" *ngIf="globals.user.id != event.hostId">Leave</ion-button>
+      <ion-button fill="solid" color="danger" slot="end" (click)="leave()" *ngIf="isAttending && globals.user.id != event.hostId">Leave</ion-button>
     </ion-item>
     <ion-item>
       <ion-icon slot="start" name="calendar-outline">
@@ -91,7 +109,7 @@
       <strong>Participants</strong>
       <ion-label style="margin-left: 10px;" color="danger" *ngIf="event.participantsCount < event.reqNumberOfPlayers">{{event.participantsCount}} / {{event.reqNumberOfPlayers}}</ion-label>
       <ion-label style="margin-left: 10px;" color="success" *ngIf="event.participantsCount >= event.reqNumberOfPlayers">{{event.participantsCount}} / {{event.reqNumberOfPlayers}}</ion-label>
-      <ion-button fill="outline" slot="end" (click)="invite()">Invite</ion-button>
+      <ion-button fill="outline" slot="end" *ngIf="globals.user.id == event.hostId" (click)="invite()">Invite</ion-button>
     </ion-item>
     <ion-item *ngFor="let item of participants | slice:0:4; let i=index">
       <!--<ion-avatar slot="start">

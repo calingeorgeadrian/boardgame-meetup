@@ -15,11 +15,14 @@ CREATE TABLE `event` (
 
 CREATE TABLE `event_participant` (
   `eventId` varchar(36) NOT NULL,
-  `participantId` varchar(36) NOT NULL,
+  `participantId` varchar(36) DEFAULT NULL,
   `inviterId` varchar(36) NOT NULL,
+  `email` varchar(128) NOT NULL,
   `status` int(11) NOT NULL,
-  PRIMARY KEY (`eventId`,`participantId`,`inviterId`)
+  `checkedIn` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`eventId`,`email`,`inviterId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 
 CREATE TABLE `user` (
@@ -33,6 +36,7 @@ CREATE TABLE `user` (
   `passwordSalt` varbinary(128) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 CREATE TABLE `game` (
   `id` varchar(36) NOT NULL,

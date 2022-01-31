@@ -44,9 +44,7 @@ public class GameRepository {
         RowMapper<GameDto> gameMapper = getGameRowMapper();
         var games = jdbcTemplate.query(sql, gameMapper);
 
-        var collection = games.stream().filter(g -> collectionItems.stream().filter(c -> c.gameBggId.equals(g.getBggId())).count() > 0).collect(Collectors.toList());;
-
-        return collection;
+        return games.stream().filter(g -> collectionItems.stream().anyMatch(c -> c.gameBggId.equals(g.getBggId()))).collect(Collectors.toList());
     }
 
     public Optional<CollectionItem> getCollectionItem(String userId, Long bggGameId) {
@@ -56,17 +54,19 @@ public class GameRepository {
     }
 
     public SaveResult importGames(String userId, List<Game> games) {
-        String sql = "INSERT INTO game VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" +
+        String sql = "INSERT INTO game VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
                      "ON DUPLICATE KEY UPDATE bggId = bggId";
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             int i = 0;
+            var newGameFound = false;
 
             for (Game game : games) {
                 var dbGame = getByBGGId(game.getBggId());
-                if(!dbGame.isPresent()) {
+                if(dbGame.isEmpty()) {
+                    newGameFound = true;
                     preparedStatement.setObject(1, UUID.randomUUID().toString());
                     if(game.getBggId() != null)
                         preparedStatement.setLong(2, game.getBggId());
@@ -92,7 +92,7 @@ public class GameRepository {
                 }
                 i++;
 
-                if (i % 1000 == 0 || i == games.size()) {
+                if (newGameFound && (i % 1000 == 0 || i == games.size())) {
                     preparedStatement.executeBatch();
                 }
             }
@@ -116,7 +116,7 @@ public class GameRepository {
 
             for (Game game : games) {
                 var dbGame = getCollectionItem(userId, game.getBggId());
-                if(!dbGame.isPresent()) {
+                if(dbGame.isEmpty()) {
                     preparedStatement.setObject(1, userId);
                     preparedStatement.setLong(2, game.getBggId());
                     preparedStatement.addBatch();

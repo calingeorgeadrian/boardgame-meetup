@@ -56,22 +56,17 @@ export class InvitePage implements OnInit {
     participant.status = 0;
     participant.participantName = this.email;
 
-    var saveResult = this.eventService.sendEventInvitation(participant);
-    if (saveResult.result) {
-      this.presentToast();
-      this.participants.push(participant);
-      this.dismiss();
-    }
-
-    //this.eventService.sendEventInvitation(participant)
-    //  .subscribe(
-    //    saveResult => {
-    //      if (saveResult.result) {
-    //        this.presentToast();
-    //        this.participants.push(participant);
-    //        this.dismiss();
-    //      }
-    //    });
+    this.eventService.invite(participant)
+      .subscribe(
+        saveResult => {
+          if (saveResult.result) {
+            this.eventService.getParticipants(this.eventId).subscribe(participants => {
+              this.participants = participants;
+              this.presentToast();
+              this.dismiss();
+            });
+          }
+        });
   }
 
   inviteFriend(friend: any) {
@@ -83,12 +78,7 @@ export class InvitePage implements OnInit {
     participant.status = 0;
     participant.participantName = friend.name;
 
-    var saveResult = this.eventService.sendEventInvitation(participant);
-    if (saveResult.result) {
-      this.presentToast();
-      this.participants.push(participant);
-      this.dismiss();
-    }
+    console.log("friends not yet implemented");
 
     //this.eventService.sendEventInvitation(participant)
     //  .subscribe(

@@ -75,40 +75,19 @@ export class EventService {
     return this.http.get<EventParticipantModel[]>(environment.apiUrl + '/events/getParticipants/' + id);
   }
 
-  sendEventInvitation(participantModel: EventParticipantModel) {
-    var saveResult = new SaveResult();
-    saveResult.result = true;
-    saveResult.errors = null;
-
-    return saveResult;
-
-    //let formData: FormData = new FormData();
-    //formData.append('participantDetails', JSON.stringify(participantModel));
-
-    //return this.http.post<any>(environment.apiUrl + '/events/SendEventInvitationAsync', formData)
-    //  .pipe(returnValue => {
-    //    return returnValue;
-    //  });
+  invite(participantModel: EventParticipantModel) {
+    return this.http.post<any>(environment.apiUrl + '/events/invite', participantModel)
+      .pipe(returnValue => {
+        return returnValue;
+      });
   }
 
-/*  acceptEventInvitation(eventId: any, userId: any): Observable<any> {*/
-  acceptEventInvitation(eventId: any, userId: any): any {
-    var saveResult = new SaveResult();
-    saveResult.result = true;
-    saveResult.errors = null;
-
-    return saveResult;
-    //return this.http.get<any>(environment.apiUrl + '/events/AcceptEventInvitationAsync?eventId=' + eventId + '&userId=' + userId);
+  acceptInvitation(eventId: any, userId: any): Observable<any> {
+    return this.http.get<any>(environment.apiUrl + '/events/acceptInvitation/eventId=' + eventId + "/userId=" + userId);
   }
 
-/*  declineEventInvitation(eventId: any, userId: any): Observable<any> {*/
-  declineEventInvitation(eventId: any, userId: any): any {
-    var saveResult = new SaveResult();
-    saveResult.result = true;
-    saveResult.errors = null;
-
-    return saveResult;
-    //return this.http.get<any>(environment.apiUrl + '/events/DeclineEventInvitationAsync?eventId=' + eventId + '&userId=' + userId);
+  declineInvitation(eventId: any, userId: any): Observable<any> {
+    return this.http.get<any>(environment.apiUrl + '/events/declineInvitation/eventId=' + eventId + "/userId=" + userId);
   }
 
   //getEventProposedGames(id: any): Observable<ProposedGameModel[]> {

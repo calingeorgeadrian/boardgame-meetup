@@ -26,6 +26,8 @@ export class EventDetailsPage implements OnInit {
   proposedGames: any[] = [];
   choosenGames: any[] = [];
 
+  isInvited: boolean = false;
+  isAttending: boolean = false;
   participantsCount: number;
   locationInputVisible: boolean = false;
   canProposeGames: boolean = false;
@@ -34,7 +36,6 @@ export class EventDetailsPage implements OnInit {
   canCheckIn: boolean = false;
   canConfirmEvent: boolean = false;
   checkedIn: boolean = false;
-  isAttending: boolean = false;
 
   constructor(private route: ActivatedRoute,
     private router: Router,
@@ -53,26 +54,30 @@ export class EventDetailsPage implements OnInit {
         if (this.id) {
           this.eventService.getEvent(this.id).subscribe(eventDetails => {
             this.event = eventDetails;
+
+            this.getParticipants();
           });
-
-          this.eventService.getParticipants(this.id).subscribe(participants => {
-            this.participants = participants;
-          });
-
-          this.event.participantsCount = this.participants.length;
-          this.proposedGames = this.eventService.getEventProposedGames(this.id);
-          this.choosenGames = this.eventService.getEventChoosenGames(this.id);
-
-          this.isAttending = this.participants.filter(p => p.participantId == this.globals.user.id).length > 0;
-          this.canProposeGames = this.choosenGames.length == 0;
-          this.canVoteGames = this.proposedGames.length > 0;
-          this.canChooseGames = this.proposedGames.filter(g => g.votes > 0).length > 0;
-          this.canCheckIn = this.choosenGames.length > 0;
-          this.canConfirmEvent = this.participants.filter(p => !p.checkIn).length == 0;
-          this.checkedIn = this.participants.filter(p => p.checkIn && p.participantId == this.globals.user.id).length > 0;
-
         }
       });
+  }
+
+  async getParticipants() {
+    this.eventService.getParticipants(this.id).subscribe(participants => {
+      this.participants = participants;
+
+      this.event.participantsCount = this.participants.filter(p => p.status == 1).length;
+      this.proposedGames = this.eventService.getEventProposedGames(this.id);
+      //this.choosenGames = this.eventService.getEventChoosenGames(this.id);
+      console.log(this.participants);
+      this.isInvited = this.participants.filter(p => p.participantId == this.globals.user.id && p.status == 0).length > 0;
+      this.isAttending = this.participants.filter(p => p.participantId == this.globals.user.id && p.status == 1).length > 0;
+      this.canProposeGames = this.choosenGames.length == 0;
+      this.canVoteGames = this.proposedGames.length > 0;
+      this.canChooseGames = this.proposedGames.filter(g => g.votes > 0).length > 0;
+      this.canCheckIn = this.choosenGames.length > 0;
+      this.canConfirmEvent = this.participants.filter(p => !p.checkedIn).length == 0;
+      this.checkedIn = this.participants.filter(p => p.checkedIn && p.participantId == this.globals.user.id).length > 0;
+    });
   }
 
   async presentToast(message: string, color: string) {
@@ -85,12 +90,42 @@ export class EventDetailsPage implements OnInit {
   }
 
   async attend() {
-    this.eventService.join(this.event.id, this.globals.user.id)
+    var participant = new EventParticipantModel();
+    participant.email = this.globals.user.email;
+    participant.eventId = this.event.id;
+    participant.participantId = this.globals.user.id;
+    participant.inviterId = this.globals.user.id;
+    participant.status = 1;
+
+    this.eventService.invite(participant)
       .subscribe(
         saveResult => {
           if (saveResult.result) {
             this.isAttending = true;
+            this.getParticipants();
             this.presentToast("Successfully joined the event!", "success");
+          }
+        });
+  }
+
+  acceptInvitation() {
+    this.eventService.acceptInvitation(this.id, this.globals.user.id)
+      .subscribe(
+        saveResult => {
+          if (saveResult.result) {
+            this.getParticipants();
+            this.presentToast('Invitation accepted.', 'success');
+          }
+        });
+  }
+
+  declineInvitation() {
+    this.eventService.declineInvitation(this.id, this.globals.user.id)
+      .subscribe(
+        saveResult => {
+          if (saveResult.result) {
+            this.getParticipants();
+            this.presentToast('Invitation declined.', 'danger');
           }
         });
   }
@@ -101,7 +136,7 @@ export class EventDetailsPage implements OnInit {
         saveResult => {
           if (saveResult.result) {
             this.presentToast("You left the event " + this.event.title + ".", "danger");
-            this.router.navigate(['/events-list'], { replaceUrl: true });
+            this.router.navigate(['/tabs/events-list'], { replaceUrl: true });
           }
         });
   }
@@ -122,7 +157,7 @@ export class EventDetailsPage implements OnInit {
         saveResult => {
           if (saveResult.result) {
             this.presentToast("You canceled the event " + this.event.title + ".", "danger");
-            this.router.navigate(['/events-list'], { replaceUrl: true });
+            this.router.navigate(['/tabs/events-list'], { replaceUrl: true });
           }
         });
   }
@@ -131,6 +166,9 @@ export class EventDetailsPage implements OnInit {
     const modal = await this.modalController.create({
       component: InvitePage,
       componentProps: { participants: this.participants, eventId: this.id }
+    });
+    modal.onDidDismiss().then((data: any) => {
+      this.getParticipants();
     });
     return await modal.present();
   }
@@ -187,7 +225,6 @@ export class EventDetailsPage implements OnInit {
   }
 
   saveLocation() {
-
     this.eventService.update(this.event)
       .subscribe(
         saveResult => {

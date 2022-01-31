@@ -46,15 +46,20 @@ export class CollectionPage implements OnInit {
 
   async import() {
     console.log("import");
-    this.games = this.bggService.getUserCollection(this.globals.user.bggUsername);
-    console.log(this.games);
-    this.gameService.importCollection(this.globals.user.id, this.games)
-      .subscribe(
-        saveResult => {
-          if (saveResult.result) {
-            this.presentToast();
-          }
-        });
+    var collectionGames = this.bggService.getUserCollection(this.globals.user.bggUsername);
+    console.log(collectionGames);
+    var newGames = collectionGames.filter(ng => this.games.find(g => g.bggId == ng.bggId) == null);
+    console.log(newGames);
+    if (newGames.length > 0) {
+      this.gameService.importCollection(this.globals.user.id, newGames)
+        .subscribe(
+          saveResult => {
+            if (saveResult.result) {
+              this.games = collectionGames;
+              this.presentToast();
+            }
+          });
+    }
   }
 
   async view(id: any) {

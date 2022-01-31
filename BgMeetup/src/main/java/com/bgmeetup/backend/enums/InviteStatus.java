@@ -7,7 +7,7 @@ public enum InviteStatus {
     NotInvited(3);
 
     private final int value;
-    private InviteStatus(int value) {
+    InviteStatus(int value) {
         this.value = value;
     }
 

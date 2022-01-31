@@ -5,13 +5,10 @@ import com.bgmeetup.backend.dto.EventParticipantDto;
 import com.bgmeetup.backend.dto.SaveResult;
 import com.bgmeetup.backend.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -37,7 +34,7 @@ public class EventController {
     }
 
     @PostMapping(path = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SaveResult create(@RequestBody EventDto request) throws ParseException {
+    public SaveResult create(@RequestBody EventDto request) {
         return eventService.create(request);
     }
 
@@ -67,9 +64,18 @@ public class EventController {
     }
 
     @PostMapping(path = "/invite", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EventParticipantDto> invite(@Valid @RequestBody EventParticipantDto request) {
-        eventService.invite(request);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public SaveResult invite(@Valid @RequestBody EventParticipantDto request) {
+        return eventService.invite(request);
+    }
+
+    @GetMapping(path = "/acceptInvitation/eventId={eventId}/userId={userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult acceptInvitation(@PathVariable String eventId, @PathVariable String userId) {
+        return eventService.acceptInvitation(eventId, userId);
+    }
+
+    @GetMapping(path = "/declineInvitation/eventId={eventId}/userId={userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult declineInvitation(@PathVariable String eventId, @PathVariable String userId) {
+        return eventService.declineInvitation(eventId, userId);
     }
 
     @GetMapping(path = "/getParticipants/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
