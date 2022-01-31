@@ -58,8 +58,8 @@ export class VoteGamesPage implements OnInit {
       });
 
     this.games.sort(function (a, b) {
-      var textA = a.owner.toUpperCase();
-      var textB = b.owner.toUpperCase();
+      var textA = a.proposer.toUpperCase();
+      var textB = b.proposer.toUpperCase();
       return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
     });
   }
