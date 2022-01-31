@@ -70,3 +70,12 @@ CREATE TABLE `proposed_game` (
   `proposerId` varchar(36) NOT NULL,
   PRIMARY KEY (`eventId`,`gameId`,`ownerId`,`proposerId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `vote` (
+  `eventId` varchar(36) NOT NULL,
+  `gameId` varchar(36) NOT NULL,
+  `ownerId` varchar(36) NOT NULL,
+  `voterId` varchar(36) NOT NULL,
+  PRIMARY KEY (`eventId`,`gameId`,`ownerId`,`voterId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

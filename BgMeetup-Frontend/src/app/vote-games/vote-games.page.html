@@ -32,7 +32,7 @@
 <ion-footer>
   <ion-toolbar>
     <ion-button color="primary" expand="full" (click)="clear()">Clear votes</ion-button>
-    <ion-button color="success" expand="full" (click)="vote()" *ngIf="actionType == 0">Propose</ion-button>
+    <ion-button color="success" expand="full" (click)="vote()" *ngIf="actionType == 0">Vote</ion-button>
     <ion-button color="success" expand="full" (click)="choose()" *ngIf="actionType == 1">Choose</ion-button>
     <ion-button color="danger" expand="full" (click)="dismiss()">Close</ion-button>
   </ion-toolbar>

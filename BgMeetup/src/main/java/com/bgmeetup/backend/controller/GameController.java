@@ -1,5 +1,6 @@
 package com.bgmeetup.backend.controller;
 
+import com.bgmeetup.backend.domain.Vote;
 import com.bgmeetup.backend.dto.GameDto;
 import com.bgmeetup.backend.dto.ProposedGameDto;
 import com.bgmeetup.backend.dto.SaveResult;
@@ -49,5 +50,15 @@ public class GameController {
     @GetMapping(path = "/getProposedGames/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ProposedGameDto> getProposedGames(@PathVariable String eventId) {
         return gameService.getProposedGames(eventId);
+    }
+
+    @PostMapping(path = "/voteGames/eventId={eventId}/userId={userId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult voteGames(@PathVariable String eventId, @PathVariable String userId, @Valid @RequestBody List<Vote> requests) {
+        return gameService.voteGames(eventId, userId, requests);
+    }
+
+    @GetMapping(path = "/getVotedGames/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Vote> getVotedGames(@PathVariable String eventId) {
+        return gameService.getVotedGames(eventId);
     }
 }

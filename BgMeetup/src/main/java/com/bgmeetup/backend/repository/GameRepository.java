@@ -3,6 +3,7 @@ package com.bgmeetup.backend.repository;
 import com.bgmeetup.backend.domain.CollectionItem;
 import com.bgmeetup.backend.domain.Game;
 import com.bgmeetup.backend.domain.ProposedGame;
+import com.bgmeetup.backend.domain.Vote;
 import com.bgmeetup.backend.dto.GameDto;
 import com.bgmeetup.backend.dto.ProposedGameDto;
 import com.bgmeetup.backend.dto.SaveResult;
@@ -182,6 +183,54 @@ public class GameRepository {
         return jdbcTemplate.query(sql, mapper);
     }
 
+    public SaveResult voteGames(List<Vote> votes) {
+        String sql = "INSERT INTO vote VALUES(?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE gameId = gameId";
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+            int i = 0;
+            for (Vote vote : votes) {
+
+                preparedStatement.setObject(1, vote.getEventId().toString());
+                preparedStatement.setObject(2, vote.getGameId().toString());
+                preparedStatement.setObject(3, vote.getOwnerId().toString());
+                preparedStatement.setObject(4, vote.getVoterId().toString());
+
+                preparedStatement.addBatch();
+
+                i++;
+
+                if (i % 1000 == 0 || i == votes.size()) {
+                    preparedStatement.executeBatch();
+                }
+            }
+
+            return preparedStatement;
+        });
+
+        return new SaveResult(true, null);
+    }
+
+    public List<Vote> getVotedGames(String eventId) {
+        String sql = "SELECT * FROM vote WHERE eventId = '" + eventId + "'";
+        RowMapper<Vote> mapper = getVoteRowMapper();
+        return jdbcTemplate.query(sql, mapper);
+    }
+
+    public SaveResult clearVotes(String eventId, String userId){
+        String sql = "DELETE FROM vote WHERE eventId = ? and voterId = ?";
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setObject(1, eventId);
+            preparedStatement.setObject(2, userId);
+            return preparedStatement;
+        });
+        return new SaveResult(true, null);
+    }
+
     private RowMapper<GameDto> getGameRowMapper() {
         return (resultSet, i) -> new GameDto(
                 UUID.fromString(resultSet.getString("id")),
@@ -217,6 +266,15 @@ public class GameRepository {
                 "",
                 "",
                 0
+        );
+    }
+
+    private RowMapper<Vote> getVoteRowMapper() {
+        return (resultSet, i) -> new Vote(
+                UUID.fromString(resultSet.getString("eventId")),
+                UUID.fromString(resultSet.getString("gameId")),
+                UUID.fromString(resultSet.getString("ownerId")),
+                UUID.fromString(resultSet.getString("voterId"))
         );
     }
 }

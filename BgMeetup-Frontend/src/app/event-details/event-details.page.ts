@@ -83,7 +83,11 @@ export class EventDetailsPage implements OnInit {
     this.gameService.getProposedGames(this.id)
       .subscribe(
         proposedGames => {
-          this.proposedGames = proposedGames;
+          this.proposedGames = proposedGames.sort(function (a, b) {
+            var votesA = a.votes;
+            var votesB = b.votes;
+            return (votesB < votesA) ? -1 : (votesB > votesA) ? 1 : 0;
+          });
           this.canVoteGames = this.proposedGames.length > 0;
           this.canChooseGames = this.proposedGames.filter(g => g.votes > 0).length > 0;
         });
@@ -205,6 +209,9 @@ export class EventDetailsPage implements OnInit {
     const modal = await this.modalController.create({
       component: VoteGamesPage,
       componentProps: { eventId: this.event.id, actionType: 0, participants: this.participants.filter(p => p.status == 1) }
+    });
+    modal.onDidDismiss().then((data: any) => {
+      this.getProposedGames();
     });
     return await modal.present();
   }

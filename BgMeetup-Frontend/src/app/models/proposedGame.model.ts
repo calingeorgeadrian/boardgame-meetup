@@ -8,4 +8,5 @@ export class ProposedGameModel {
   imageUrl: any;
   proposerName: string;
   votes: number;
+  isSelected: boolean;
 }
