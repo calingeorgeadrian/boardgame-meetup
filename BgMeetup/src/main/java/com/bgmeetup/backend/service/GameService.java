@@ -85,4 +85,13 @@ public class GameService {
     public List<Vote> getVotedGames(String eventId) {
         return gameRepository.getVotedGames(eventId);
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    public SaveResult chooseGames(String eventId, List<ProposedGameDto> requests) {
+        var clearResult = gameRepository.clearChosenGames(eventId);
+        if(requests.size() > 0){
+            return gameRepository.chooseGames(requests);
+        }
+        else return clearResult;
+    }
 }

@@ -21,4 +21,5 @@ public class ProposedGameDto {
     public String imageUrl;
     public String proposerName;
     public Integer votes;
+    public boolean isChosen;
 }

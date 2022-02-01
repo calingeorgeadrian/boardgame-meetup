@@ -61,6 +61,13 @@ export class GameService {
     return this.http.get<VoteModel[]>(environment.apiUrl + '/games/getVotedGames/' + id);
   }
 
+  chooseGames(eventId: any, games: any[]) {
+    return this.http.post<any>(environment.apiUrl + '/games/chooseGames/eventId=' + eventId, games)
+      .pipe(map(returnValue => {
+        return returnValue;
+      }));
+  }
+
   //getEventProposedGames(id: any): Observable<ProposedGameModel[]> {
   getEventChoosenGames(id: any): ProposedGameModel[] {
     var games = [];

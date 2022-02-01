@@ -9,4 +9,5 @@ export class ProposedGameModel {
   proposerName: string;
   votes: number;
   isSelected: boolean;
+  isChosen: boolean;
 }

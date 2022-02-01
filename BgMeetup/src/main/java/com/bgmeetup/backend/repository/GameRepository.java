@@ -1,9 +1,6 @@
 package com.bgmeetup.backend.repository;
 
-import com.bgmeetup.backend.domain.CollectionItem;
-import com.bgmeetup.backend.domain.Game;
-import com.bgmeetup.backend.domain.ProposedGame;
-import com.bgmeetup.backend.domain.Vote;
+import com.bgmeetup.backend.domain.*;
 import com.bgmeetup.backend.dto.GameDto;
 import com.bgmeetup.backend.dto.ProposedGameDto;
 import com.bgmeetup.backend.dto.SaveResult;
@@ -231,6 +228,34 @@ public class GameRepository {
         return new SaveResult(true, null);
     }
 
+    public SaveResult chooseGames(List<ProposedGameDto> games) {
+        String sql = "UPDATE proposed_game SET isChosen = ? WHERE eventId = ? && gameId = ?";
+
+        for (ProposedGameDto game : games) {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                preparedStatement.setBoolean(1, game.isChosen());
+                preparedStatement.setString(2, game.getEventId().toString());
+                preparedStatement.setString(3, game.getGameId().toString());
+                return preparedStatement;
+            });
+        }
+
+        return new SaveResult(true, null);
+    }
+
+    public SaveResult clearChosenGames(String eventId) {
+        String sql = "UPDATE proposed_game SET isChosen = ? WHERE eventId = ?";
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setBoolean(1, false);
+            preparedStatement.setString(2, eventId);
+            return preparedStatement;
+        });
+        return new SaveResult(true, null);
+    }
+
     private RowMapper<GameDto> getGameRowMapper() {
         return (resultSet, i) -> new GameDto(
                 UUID.fromString(resultSet.getString("id")),
@@ -265,7 +290,8 @@ public class GameRepository {
                 "",
                 "",
                 "",
-                0
+                0,
+                resultSet.getBoolean("isChosen")
         );
     }
 

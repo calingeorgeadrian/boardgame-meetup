@@ -68,8 +68,10 @@ CREATE TABLE `proposed_game` (
   `gameId` varchar(36) NOT NULL,
   `ownerId` varchar(36) NOT NULL,
   `proposerId` varchar(36) NOT NULL,
+  `isChosen` bit(1) NOT NULL,
   PRIMARY KEY (`eventId`,`gameId`,`ownerId`,`proposerId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 
 CREATE TABLE `vote` (

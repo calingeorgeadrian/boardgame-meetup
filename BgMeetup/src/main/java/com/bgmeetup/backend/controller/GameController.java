@@ -61,4 +61,9 @@ public class GameController {
     public List<Vote> getVotedGames(@PathVariable String eventId) {
         return gameService.getVotedGames(eventId);
     }
+
+    @PostMapping(path = "/chooseGames/eventId={eventId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult chooseGames(@PathVariable String eventId, @Valid @RequestBody List<ProposedGameDto> requests) {
+        return gameService.chooseGames(eventId, requests);
+    }
 }

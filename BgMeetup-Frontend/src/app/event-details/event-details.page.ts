@@ -25,7 +25,6 @@ export class EventDetailsPage implements OnInit {
   eventHost: UserModel = new UserModel();
   participants: EventParticipantModel[] = [];
   proposedGames: any[] = [];
-  choosenGames: any[] = [];
 
   isInvited: boolean = false;
   isAttending: boolean = false;
@@ -44,8 +43,7 @@ export class EventDetailsPage implements OnInit {
     public toastController: ToastController,
     public modalController: ModalController,
     private eventService: EventService,
-    private gameService: GameService,
-    private userService: UserService) {
+    private gameService: GameService) {
   }
 
   ngOnInit() {
@@ -56,6 +54,7 @@ export class EventDetailsPage implements OnInit {
         if (this.id) {
           this.eventService.getEvent(this.id).subscribe(eventDetails => {
             this.event = eventDetails;
+            console.log(this.event);
 
             this.getParticipants();
           });
@@ -69,11 +68,8 @@ export class EventDetailsPage implements OnInit {
 
       this.event.participantsCount = this.participants.filter(p => p.status == 1).length;
       this.getProposedGames();
-      //this.choosenGames = this.eventService.getEventChoosenGames(this.id);
       this.isInvited = this.participants.filter(p => p.participantId == this.globals.user.id && p.status == 0).length > 0;
       this.isAttending = this.participants.filter(p => p.participantId == this.globals.user.id && p.status == 1).length > 0;
-      this.canProposeGames = this.choosenGames.length == 0;
-      this.canCheckIn = this.choosenGames.length > 0;
       this.canConfirmEvent = this.participants.filter(p => !p.checkedIn).length == 0;
       this.checkedIn = this.participants.filter(p => p.checkedIn && p.participantId == this.globals.user.id).length > 0;
     });
@@ -83,6 +79,7 @@ export class EventDetailsPage implements OnInit {
     this.gameService.getProposedGames(this.id)
       .subscribe(
         proposedGames => {
+          console.log(proposedGames);
           this.proposedGames = proposedGames.sort(function (a, b) {
             var votesA = a.votes;
             var votesB = b.votes;
@@ -90,6 +87,10 @@ export class EventDetailsPage implements OnInit {
           });
           this.canVoteGames = this.proposedGames.length > 0;
           this.canChooseGames = this.proposedGames.filter(g => g.votes > 0).length > 0;
+          this.canProposeGames = this.proposedGames.filter(pg => pg.isChosen).length == 0;
+          this.canCheckIn = this.proposedGames.filter(pg => pg.isChosen).length > 0;
+          console.log(this.proposedGames);
+          console.log(this.canCheckIn);
         });
   }
 
@@ -220,6 +221,9 @@ export class EventDetailsPage implements OnInit {
     const modal = await this.modalController.create({
       component: VoteGamesPage,
       componentProps: { eventId: this.event.id, actionType: 1, participants: this.participants.filter(p => p.status == 1) }
+    });
+    modal.onDidDismiss().then((data: any) => {
+      this.getProposedGames();
     });
     return await modal.present();
   }

@@ -3,14 +3,14 @@
     "",
     "\\src",
     "\\src\\app",
-    "\\src\\app\\collection",
-    "\\src\\app\\game-details",
-    "\\src\\app\\models",
-    "\\src\\app\\profile",
-    "\\src\\app\\services",
+    "\\src\\app\\event-details",
+    "\\src\\app\\events-list",
+    "\\src\\app\\invite",
+    "\\src\\app\\propose-games",
     "\\src\\app\\tabs",
+    "\\src\\app\\vote-games",
     "\\src\\environments"
   ],
-  "SelectedNode": "\\src\\app\\game-details\\game-details.page.html",
+  "SelectedNode": "\\src\\app\\models\\proposedGame.model.ts",
   "PreviewInSolutionExplorer": false
 }

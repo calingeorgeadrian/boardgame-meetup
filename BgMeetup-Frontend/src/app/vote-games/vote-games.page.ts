@@ -3,6 +3,7 @@ import { ModalController, NavParams } from '@ionic/angular';
 import { GameDetailsPage } from '../game-details/game-details.page';
 import { Globals } from '../globals';
 import { EventParticipantModel } from '../models/eventParticipant.model';
+import { ProposedGameModel } from '../models/proposedGame.model';
 import { VoteModel } from '../models/vote.model';
 import { BGGService } from '../services/bgg.service';
 import { EventService } from '../services/event.service';
@@ -50,7 +51,12 @@ export class VoteGamesPage implements OnInit {
             proposer: p.participantName,
             games: proposerGames.map(game => {
               var temp = Object.assign({}, game);
-              temp.isSelected = (this.votes.filter(vg => vg.gameId == game.gameId && vg.voterId == this.globals.user.id).length > 0);
+              if (this.actionType == 0) {
+                temp.isSelected = (this.votes.filter(vg => vg.gameId == game.gameId && vg.voterId == this.globals.user.id).length > 0);
+              }
+              else if (this.actionType == 1) {
+                temp.isSelected = (proposedGames.filter(vg => vg.gameId == game.gameId)[0].isChosen);
+                }
                 return temp;
               })
           });
@@ -106,26 +112,23 @@ export class VoteGamesPage implements OnInit {
       owner.games.forEach(g => {
         if (g.isSelected) {
           console.log(g);
-          var v = new VoteModel();
+          var v = new ProposedGameModel();
           v.eventId = this.eventId;
           v.ownerId = g.ownerId;
           v.gameId = g.gameId;
-          v.voterId = this.globals.user.id;
+          v.proposerId = this.globals.user.id;
+          v.isChosen = true;
           selectedGames.push(v);
         }
       });
     });
-    var saveResult = this.eventService.chooseGames(selectedGames, this.eventId);
-    if (saveResult.result) {
-      this.dismiss();
-    }
 
-    //this.eventService.submitProposals(selectedGames, this.globals.user.id).subscribe(
-    //  saveResult => {
-    //    if (saveResult.result) {
-    //      this.dismiss();
-    //    }
-    //  });
+    this.gameService.chooseGames(this.eventId, selectedGames).subscribe(
+      saveResult => {
+        if (saveResult.result) {
+          this.dismiss();
+        }
+      });
   }
 
   clear() {

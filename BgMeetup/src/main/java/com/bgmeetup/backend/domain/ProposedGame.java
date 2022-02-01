@@ -15,4 +15,5 @@ public class ProposedGame {
     public UUID gameId;
     public UUID ownerId;
     public UUID proposerId;
+    public boolean isChosen;
 }
