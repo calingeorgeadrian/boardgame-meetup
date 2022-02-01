@@ -57,6 +57,14 @@ const routes: Routes = [
   {
     path: 'vote-games',
     loadChildren: () => import('./vote-games/vote-games.module').then( m => m.VoteGamesPageModule)
+  },
+  {
+    path: 'leaderboard-form',
+    loadChildren: () => import('./leaderboard-form/leaderboard-form.module').then( m => m.LeaderboardFormPageModule)
+  },
+  {
+    path: 'leaderboard',
+    loadChildren: () => import('./leaderboard/leaderboard.module').then( m => m.LeaderboardPageModule)
   }
 ];
 @NgModule({

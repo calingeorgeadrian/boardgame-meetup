@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Leaderboard</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item-group *ngFor="let game of leaderboardGames">
+      <ion-item-divider>
+        <ion-avatar slot="start">
+          <img src="{{game.imageUrl}}">
+        </ion-avatar>
+        <ion-label>{{game.title}}</ion-label>
+      </ion-item-divider>
+      <ion-item *ngFor="let participantScore of game.participantsScores">
+
+        <ion-label>{{participantScore.participantName}}</ion-label>
+        <ion-input  class="ion-text-right" type="number" [(ngModel)]="participantScore.score" name="score" min="0"></ion-input>
+      </ion-item>
+    </ion-item-group>
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button color="success" expand="full" (click)="submit()">Submit</ion-button>
+    <ion-button color="danger" expand="full" (click)="dismiss()">Close</ion-button>
+  </ion-toolbar>
+</ion-footer>

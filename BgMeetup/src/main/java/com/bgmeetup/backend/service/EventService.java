@@ -2,13 +2,14 @@ package com.bgmeetup.backend.service;
 
 import com.bgmeetup.backend.domain.Event;
 import com.bgmeetup.backend.domain.EventParticipant;
-import com.bgmeetup.backend.dto.EventDto;
-import com.bgmeetup.backend.dto.EventParticipantDto;
-import com.bgmeetup.backend.dto.SaveResult;
+import com.bgmeetup.backend.domain.LeaderboardScore;
+import com.bgmeetup.backend.domain.ProposedGame;
+import com.bgmeetup.backend.dto.*;
 import com.bgmeetup.backend.enums.InviteStatus;
 import com.bgmeetup.backend.exceptions.EntityNotFoundException;
 import com.bgmeetup.backend.mapper.EventMapper;
 import com.bgmeetup.backend.mapper.EventParticipantMapper;
+import com.bgmeetup.backend.mapper.LeaderboardScoreMapper;
 import com.bgmeetup.backend.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,13 +24,22 @@ public class EventService {
     private final EventRepository eventRepository;
     private final EventParticipantMapper eventParticipantMapper;
     private final UserService userService;
+    private final GameService gameService;
+    private final LeaderboardScoreMapper leaderboardScoreMapper;
 
     @Autowired
-    public EventService(EventMapper eventMapper, EventRepository eventRepository, EventParticipantMapper eventParticipantMapper, UserService userService) {
+    public EventService(EventMapper eventMapper,
+                        EventRepository eventRepository,
+                        EventParticipantMapper eventParticipantMapper,
+                        UserService userService,
+                        GameService gameService,
+                        LeaderboardScoreMapper leaderboardScoreMapper) {
         this.eventMapper = eventMapper;
         this.eventRepository = eventRepository;
         this.eventParticipantMapper = eventParticipantMapper;
         this.userService = userService;
+        this.gameService = gameService;
+        this.leaderboardScoreMapper = leaderboardScoreMapper;
     }
 
     public EventDto get(String eventId) {
@@ -140,5 +150,23 @@ public class EventService {
 
     public SaveResult checkIn(String eventId, String userId) {
         return eventRepository.checkIn(eventId, userId);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public SaveResult submitLeaderboard(List<LeaderboardScoreDto> requests) {
+        List<LeaderboardScore> games = leaderboardScoreMapper.toEntityList(requests);
+        return eventRepository.submitLeaderboard(games);
+    }
+
+    public List<LeaderboardScoreDto> getLeaderboard(String eventId) {
+        var leaderboard = eventRepository.getLeaderboard(eventId);
+        for (LeaderboardScoreDto score : leaderboard) {
+            var participant = userService.get(score.getParticipantId().toString());
+            score.setParticipantName(participant.getLastName() + " " + participant.getFirstName());
+            var game = gameService.get(score.getGameId().toString());
+            score.setTitle(game.getTitle());
+        }
+
+        return leaderboard;
     }
 }

@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Leaderboard</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item-group *ngFor="let game of leaderboardGames">
+      <ion-item-divider>
+        <ion-avatar slot="start">
+          <img src="{{game.imageUrl}}">
+        </ion-avatar>
+        <ion-label>{{game.title}}</ion-label>
+      </ion-item-divider>
+      <ion-item *ngFor="let participantScore of game.participantsScores">
+
+        <ion-label>{{participantScore.participantName}}</ion-label>
+        <ion-label class="ion-text-right">{{participantScore.score}}</ion-label>
+      </ion-item>
+    </ion-item-group>
+  </ion-list>
+</ion-content>
