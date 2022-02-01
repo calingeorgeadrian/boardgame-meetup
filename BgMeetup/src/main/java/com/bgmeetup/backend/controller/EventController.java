@@ -43,6 +43,11 @@ public class EventController {
         return eventService.update(request);
     }
 
+    @GetMapping(path = "/cancel/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult cancel(@PathVariable String eventId) {
+        return eventService.cancel(eventId);
+    }
+
     @GetMapping(path = "/join/eventId={eventId}/userId={userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public SaveResult join(@PathVariable String eventId, @PathVariable String userId) {
         return eventService.join(eventId, userId);
@@ -53,14 +58,9 @@ public class EventController {
         return eventService.leave(eventId, userId);
     }
 
-    @GetMapping(path = "/cancel/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SaveResult cancel(@PathVariable String eventId) {
-        return eventService.cancel(eventId);
-    }
-
-    @GetMapping(path = "/confirm/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SaveResult confirm(@PathVariable String eventId) {
-        return eventService.confirm(eventId);
+    @GetMapping(path = "/getParticipants/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<EventParticipantDto> getEventParticipants(@PathVariable String eventId) {
+        return eventService.getParticipants(eventId);
     }
 
     @PostMapping(path = "/invite", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -78,8 +78,13 @@ public class EventController {
         return eventService.declineInvitation(eventId, userId);
     }
 
-    @GetMapping(path = "/getParticipants/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<EventParticipantDto> getEventParticipants(@PathVariable String eventId) {
-        return eventService.getParticipants(eventId);
+    @GetMapping(path = "/checkIn/eventId={eventId}/userId={userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult checkIn(@PathVariable String eventId, @PathVariable String userId) {
+        return eventService.checkIn(eventId, userId);
+    }
+
+    @GetMapping(path = "/confirm/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult confirm(@PathVariable String eventId) {
+        return eventService.confirm(eventId);
     }
 }

@@ -3,9 +3,11 @@ import { ModalController, NavParams } from '@ionic/angular';
 import { GameDetailsPage } from '../game-details/game-details.page';
 import { Globals } from '../globals';
 import { EventParticipantModel } from '../models/eventParticipant.model';
+import { ProposedGameModel } from '../models/proposedGame.model';
 import { VoteModel } from '../models/vote.model';
 import { BGGService } from '../services/bgg.service';
 import { EventService } from '../services/event.service';
+import { GameService } from '../services/game.service.';
 import { UserService } from '../services/user.service';
 
 @Component({
@@ -14,6 +16,7 @@ import { UserService } from '../services/user.service';
   styleUrls: ['./vote-games.page.scss'],
 })
 export class VoteGamesPage implements OnInit {
+  votes: VoteModel[] = [];
   games: any[] = [];
   eventId: any;
   participants: EventParticipantModel[] = [];
@@ -23,20 +26,47 @@ export class VoteGamesPage implements OnInit {
     public viewCtrl: ModalController,
     public globals: Globals,
     private eventService: EventService,
+    private gameService: GameService,
     private bggService: BGGService,
     private userService: UserService) {
     this.eventId = navParams.get('eventId');
     this.actionType = navParams.get('actionType');
+    this.participants = navParams.get('participants');
   }
 
   ngOnInit() {
-    var proposedGames = this.eventService.getEventProposedGames(this.eventId);
-    var proposers = [{ id: "49125c98-1aa6-4763-8e29-8de47b3b2512", name: "Calin George" }, { id: "df42cc31-c2c2-4fb2-9182-d601282e30ec", name: "Hirhui Ema" }, { id: "ed49c1cc-09d4-4f73-9a71-9d0035e616ce", name: "Matei Cristina" }]
+    this.gameService.getVotedGames(this.eventId)
+      .subscribe(
+        votes => {
+          this.votes = votes;
+        });
 
+    this.gameService.getProposedGames(this.eventId)
+    .subscribe(
+      proposedGames => {
+        this.participants.forEach(p => {
+          var proposerGames = proposedGames.filter(g => g.proposerId == p.participantId);
+          this.games.push({
+            proposerId: p.participantId,
+            proposer: p.participantName,
+            games: proposerGames.map(game => {
+              var temp = Object.assign({}, game);
+              if (this.actionType == 0) {
+                temp.isSelected = (this.votes.filter(vg => vg.gameId == game.gameId && vg.voterId == this.globals.user.id).length > 0);
+              }
+              else if (this.actionType == 1) {
+                temp.isSelected = (proposedGames.filter(vg => vg.gameId == game.gameId)[0].isChosen);
+                }
+                return temp;
+              })
+          });
+        });
+      });
 
-    proposers.forEach(p => {
-      var proposerGames = proposedGames.filter(g => g.proposerId == p.id);
-      this.games.push({ proposerId: p.id, proposer: p.name, games: proposerGames });
+    this.games.sort(function (a, b) {
+      var textA = a.proposer.toUpperCase();
+      var textB = b.proposer.toUpperCase();
+      return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
     });
   }
 
@@ -57,7 +87,6 @@ export class VoteGamesPage implements OnInit {
     this.games.forEach(owner => {
       owner.games.forEach(g => {
         if (g.isSelected) {
-          console.log(g);
           var v = new VoteModel();
           v.eventId = this.eventId;
           v.ownerId = g.ownerId;
@@ -67,17 +96,14 @@ export class VoteGamesPage implements OnInit {
         }
       });
     });
-    var saveResult = this.eventService.submitVotes(selectedGames, this.globals.user.id);
-    if (saveResult.result) {
-      this.dismiss();
-    }
 
-    //this.eventService.submitProposals(selectedGames, this.globals.user.id).subscribe(
-    //  saveResult => {
-    //    if (saveResult.result) {
-    //      this.dismiss();
-    //    }
-    //  });
+    console.log(selectedGames);
+    this.gameService.voteGames(this.eventId, this.globals.user.id, selectedGames).subscribe(
+      saveResult => {
+        if (saveResult.result) {
+          this.dismiss();
+        }
+      });
   }
 
   choose() {
@@ -86,26 +112,23 @@ export class VoteGamesPage implements OnInit {
       owner.games.forEach(g => {
         if (g.isSelected) {
           console.log(g);
-          var v = new VoteModel();
+          var v = new ProposedGameModel();
           v.eventId = this.eventId;
           v.ownerId = g.ownerId;
           v.gameId = g.gameId;
-          v.voterId = this.globals.user.id;
+          v.proposerId = this.globals.user.id;
+          v.isChosen = true;
           selectedGames.push(v);
         }
       });
     });
-    var saveResult = this.eventService.chooseGames(selectedGames, this.eventId);
-    if (saveResult.result) {
-      this.dismiss();
-    }
 
-    //this.eventService.submitProposals(selectedGames, this.globals.user.id).subscribe(
-    //  saveResult => {
-    //    if (saveResult.result) {
-    //      this.dismiss();
-    //    }
-    //  });
+    this.gameService.chooseGames(this.eventId, selectedGames).subscribe(
+      saveResult => {
+        if (saveResult.result) {
+          this.dismiss();
+        }
+      });
   }
 
   clear() {
