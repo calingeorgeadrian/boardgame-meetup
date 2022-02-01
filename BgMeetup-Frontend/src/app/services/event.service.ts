@@ -98,19 +98,15 @@ export class EventService {
     return saveResult;
   }
 
-  checkInParticipant(participantId: string, eventId: string) {
-    var saveResult = new SaveResult();
-    saveResult.result = true;
-    saveResult.errors = null;
-
-    return saveResult;
+  checkIn(eventId: any, userId: any) {
+    return this.http.get<any>(environment.apiUrl + '/events/checkIn/eventId=' + eventId + "/userId=" + userId);
   }
 
-  confirmEvent(eventId: string) {
-    var saveResult = new SaveResult();
-    saveResult.result = true;
-    saveResult.errors = null;
+  confirm(eventId: any): Observable<SaveResult> {
+    return this.http.get<SaveResult>(environment.apiUrl + '/events/confirm/' + eventId)
+      .pipe(map(returnValue => {
 
-    return saveResult;
+        return returnValue;
+      }));
   }
 }

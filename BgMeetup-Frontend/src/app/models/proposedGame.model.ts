@@ -7,6 +7,7 @@ export class ProposedGameModel {
   title: string;
   imageUrl: any;
   proposerName: string;
+  ownerName: string;
   votes: number;
   isSelected: boolean;
   isChosen: boolean;

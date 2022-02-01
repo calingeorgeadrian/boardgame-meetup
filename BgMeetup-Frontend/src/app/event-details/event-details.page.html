@@ -66,6 +66,27 @@
       </ion-row>
     </ion-card>
 
+    <ion-card *ngIf="event.status == 1">
+      <ion-item>
+        <ion-label><strong>Event confirmed!</strong></ion-label>
+      </ion-item>
+      <ion-row>
+        <ion-col>
+          <ion-card-content>
+            <div style="text-align: center;">
+              <ion-label>The following participants should bring these games:</ion-label>
+              <ion-item *ngFor="let item of chosenGames">
+                  <ion-label>{{item.owner}}</ion-label>
+                  <span *ngFor="let game of item.games; last as isLast">
+                    {{game.title}}<span *ngIf="!isLast">,&nbsp;</span>
+                  </span>
+              </ion-item>
+            </div>
+          </ion-card-content>
+        </ion-col>
+      </ion-row>
+    </ion-card>
+
     <ion-item>
       <!--<ion-avatar slot="start">
       <img src="{{eventhost.image}}">
@@ -112,9 +133,11 @@
       <ion-button fill="outline" slot="end" *ngIf="globals.user.id == event.hostId" (click)="invite()">Invite</ion-button>
     </ion-item>
     <ion-item *ngFor="let item of participants | slice:0:4; let i=index">
-      <!--<ion-avatar slot="start">
-        <img src="{{item.image}}">
-      </ion-avatar>-->
+
+      <ion-icon name="checkmark-outline" color="success" *ngIf="item.checkedIn">
+      </ion-icon>
+      <ion-icon name="close-outline" color="danger" *ngIf="!item.checkedIn">
+      </ion-icon>
       <ion-label>{{item.participantName}}</ion-label>
       <ion-badge color="primary" slot="end" *ngIf="item.participantId == event.hostId">Host</ion-badge>
       <ion-badge color="warning" slot="end" *ngIf="item.status == 0 && item.participantId != event.hostId">Pending</ion-badge>

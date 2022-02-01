@@ -20,6 +20,7 @@ public class ProposedGameDto {
     public String title;
     public String imageUrl;
     public String proposerName;
+    public String ownerName;
     public Integer votes;
     public boolean isChosen;
 }

@@ -290,6 +290,7 @@ public class GameRepository {
                 "",
                 "",
                 "",
+                "",
                 0,
                 resultSet.getBoolean("isChosen")
         );

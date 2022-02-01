@@ -68,6 +68,8 @@ public class GameService {
             proposedGame.setVotes((int)votesCount);
             var proposer = userService.get(proposedGame.getProposerId().toString());
             proposedGame.setProposerName(proposer.getLastName() + " " + proposer.getFirstName());
+            var owner = userService.get(proposedGame.getOwnerId().toString());
+            proposedGame.setOwnerName(owner.getLastName() + " " + owner.getFirstName());
         }
 
         return proposedGames;

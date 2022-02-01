@@ -137,4 +137,8 @@ public class EventService {
 
         return participants;
     }
+
+    public SaveResult checkIn(String eventId, String userId) {
+        return eventRepository.checkIn(eventId, userId);
+    }
 }

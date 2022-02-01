@@ -82,4 +82,9 @@ public class EventController {
     public List<EventParticipantDto> getEventParticipants(@PathVariable String eventId) {
         return eventService.getParticipants(eventId);
     }
+
+    @GetMapping(path = "/checkIn/eventId={eventId}/userId={userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult checkIn(@PathVariable String eventId, @PathVariable String userId) {
+        return eventService.checkIn(eventId, userId);
+    }
 }

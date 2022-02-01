@@ -183,6 +183,19 @@ public class EventRepository {
         return jdbcTemplate.query(sql, mapper, eventId);
     }
 
+    public SaveResult checkIn(String eventId, String userId) {
+        String sql = "UPDATE event_participant SET checkedIn = ? WHERE eventId = ? && participantId = ?";
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setBoolean(1, true);
+            preparedStatement.setString(2, eventId);
+            preparedStatement.setString(3, userId);
+            return preparedStatement;
+        });
+        return new SaveResult(true, null);
+    }
+
     private RowMapper<EventDto> getEventRowMapper() {
         return (resultSet, i) -> new EventDto(
                 UUID.fromString(resultSet.getString("id")),
@@ -194,7 +207,7 @@ public class EventRepository {
                 resultSet.getObject("date", LocalDateTime.class),
                 "",
                 "",
-                0,
+                resultSet.getInt("status"),
                 0
         );
     }
