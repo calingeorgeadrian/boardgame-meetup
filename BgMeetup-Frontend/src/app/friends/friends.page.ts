@@ -29,23 +29,23 @@ export class FriendsPage implements OnInit {
   }
 
   getFriends() {
-    this.friends = this.userService.getFriends(this.globals.user.id);
+    // this.friends = this.userService.getFriends(this.globals.user.id);
 
-    //this.userService.getFriends(this.globals.user.id).subscribe(friends => {
-    //  this.friends = friends;
-    //});
+    this.userService.getFriends(this.globals.user.id).subscribe(friends => {
+     this.friends = friends;
+    });
   }
 
   getFriendRequests() {
-    this.friendRequests = this.userService.getFriendRequests(this.globals.user.id);
-    this.receivedFriendRequests = this.friendRequests.filter(fr => fr.receiverId == this.globals.user.id);
-    this.sentFriendRequests = this.friendRequests.filter(fr => fr.senderId == this.globals.user.id);
+    // this.friendRequests = this.userService.getFriendRequests(this.globals.user.id);
+    // this.receivedFriendRequests = this.friendRequests.filter(fr => fr.receiverId == this.globals.user.id);
+    // this.sentFriendRequests = this.friendRequests.filter(fr => fr.senderId == this.globals.user.id);
 
-    //this.userService.getFriendRequests(this.globals.user.id).subscribe(friendRequests => {
-    //  this.friendRequests = friendRequests;
-    //  this.receivedFriendRequests = this.friendRequests.filter(fr => fr.receiverId == this.globals.user.id);
-    //  this.sentFriendRequests = this.friendRequests.filter(fr => fr.senderId == this.globals.user.id);
-    //});
+    this.userService.getFriendRequests(this.globals.user.id).subscribe(friendRequests => {
+     this.friendRequests = friendRequests;
+     this.receivedFriendRequests = this.friendRequests.filter(fr => fr.receiverId === this.globals.user.id);
+     this.sentFriendRequests = this.friendRequests.filter(fr => fr.senderId === this.globals.user.id);
+    });
   }
 
   sendFriendRequest() {
@@ -54,23 +54,23 @@ export class FriendsPage implements OnInit {
     friendRequest.email = this.email;
     friendRequest.senderId = this.globals.user.id;
     friendRequest.receiverId = null;
+    //
+    // var saveResult = this.userService.sendFriendRequest(friendRequest);
+    // if (saveResult.result) {
+    //   this.friendRequests.push(friendRequest);
+    //   this.sentFriendRequests.push(friendRequest);
+    //   this.presentToast('Friend request sent.', 'success');
+    // }
 
-    var saveResult = this.userService.sendFriendRequest(friendRequest);
-    if (saveResult.result) {
-      this.friendRequests.push(friendRequest);
-      this.sentFriendRequests.push(friendRequest);
-      this.presentToast('Friend request sent.', 'success');
-    }
-
-    //this.userService.sendFriendRequest(friendRequest)
-    //  .subscribe(
-    //    saveResult => {
-    //      if (saveResult.result) {
-    //        this.friendRequests.push(friendRequest);
-    //        this.sentFriendRequests.push(friendRequest);
-    //        this.presentToast('Friend request sent.', 'success');
-    //      }
-    //    });
+    this.userService.sendFriendRequest(friendRequest)
+     .subscribe(
+       saveResult => {
+         if (saveResult.result) {
+           this.friendRequests.push(friendRequest);
+           this.sentFriendRequests.push(friendRequest);
+           this.presentToast('Friend request sent.', 'success');
+         }
+       });
   }
 
   async presentToast(message, color) {
