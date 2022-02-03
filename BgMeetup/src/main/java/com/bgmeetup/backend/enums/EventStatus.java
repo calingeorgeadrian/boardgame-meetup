@@ -1,7 +1,7 @@
 package com.bgmeetup.backend.enums;
 
 public enum EventStatus {
-    Pending(0) ,
+    Pending(0),
     Confirmed(1),
     Canceled(2);
 

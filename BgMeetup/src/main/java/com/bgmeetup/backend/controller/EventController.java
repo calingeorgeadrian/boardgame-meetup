@@ -1,8 +1,7 @@
 package com.bgmeetup.backend.controller;
 
-import com.bgmeetup.backend.dto.EventDto;
-import com.bgmeetup.backend.dto.EventParticipantDto;
-import com.bgmeetup.backend.dto.SaveResult;
+import com.bgmeetup.backend.domain.Feedback;
+import com.bgmeetup.backend.dto.*;
 import com.bgmeetup.backend.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -86,5 +85,25 @@ public class EventController {
     @GetMapping(path = "/confirm/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public SaveResult confirm(@PathVariable String eventId) {
         return eventService.confirm(eventId);
+    }
+
+    @PostMapping(path = "/submitLeaderboard", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult submitLeaderboard(@Valid @RequestBody List<LeaderboardScoreDto> requests) {
+        return eventService.submitLeaderboard(requests);
+    }
+
+    @GetMapping(path = "/getLeaderboard/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<LeaderboardScoreDto> getLeaderboard(@PathVariable String eventId) {
+        return eventService.getLeaderboard(eventId);
+    }
+
+    @PostMapping(path = "/submitFeedback", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult submitFeedback(@Valid @RequestBody List<Feedback> requests) {
+        return eventService.submitFeedback(requests);
+    }
+
+    @GetMapping(path = "/getFeedback/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Feedback> getFeedback(@PathVariable String eventId) {
+        return eventService.getFeedback(eventId);
     }
 }

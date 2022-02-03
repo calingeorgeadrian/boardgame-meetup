@@ -5,6 +5,8 @@ import { map } from "rxjs/operators";
 import { environment } from "../../environments/environment";
 import { EventModel } from "../models/event.model";
 import { EventParticipantModel } from "../models/eventParticipant.model";
+import { FeedbackModel } from "../models/feedback.model";
+import { LeaderboardScoreModel } from "../models/leaderboardScore.model";
 import { ProposedGameModel } from "../models/proposedGame.model";
 import { SaveResult } from "../models/saveResult";
 import { BGGService } from "./bgg.service";
@@ -108,5 +110,27 @@ export class EventService {
 
         return returnValue;
       }));
+  }
+
+  submitLeaderboard(leaderboard: any[]) {
+    return this.http.post<any>(environment.apiUrl + '/events/submitLeaderboard', leaderboard)
+      .pipe(map(returnValue => {
+        return returnValue;
+      }));
+  }
+
+  getLeaderboard(eventId: any): Observable<LeaderboardScoreModel[]> {
+    return this.http.get<LeaderboardScoreModel[]>(environment.apiUrl + '/events/getLeaderboard/' + eventId);
+  }
+
+  submitFeedback(feedback: any[]) {
+    return this.http.post<any>(environment.apiUrl + '/events/submitFeedback', feedback)
+      .pipe(map(returnValue => {
+        return returnValue;
+      }));
+  }
+
+  getFeedback(eventId: any): Observable<FeedbackModel[]> {
+    return this.http.get<FeedbackModel[]>(environment.apiUrl + '/events/getFeedback/' + eventId);
   }
 }

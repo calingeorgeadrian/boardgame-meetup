@@ -81,3 +81,25 @@ CREATE TABLE `vote` (
   `voterId` varchar(36) NOT NULL,
   PRIMARY KEY (`eventId`,`gameId`,`ownerId`,`voterId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `score` (
+  `id` varchar(36) NOT NULL,
+  `eventId` varchar(36) NOT NULL,
+  `gameId` varchar(36) NOT NULL,
+  `participantId` varchar(36) NOT NULL,
+  `score` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `feedback` (
+  `id` varchar(36) NOT NULL,
+  `eventId` varchar(36) NOT NULL,
+  `gameId` varchar(36) NOT NULL,
+  `participantId` varchar(36) NOT NULL,
+  `feedbackGiverId` varchar(36) NOT NULL,
+  `type` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+

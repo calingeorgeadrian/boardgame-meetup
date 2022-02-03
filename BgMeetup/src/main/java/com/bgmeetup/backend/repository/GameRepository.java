@@ -133,7 +133,7 @@ public class GameRepository {
     }
 
     public SaveResult proposeGames(List<ProposedGame> games) {
-        String sql = "INSERT INTO proposed_game VALUES(?, ?, ?, ?) " +
+        String sql = "INSERT INTO proposed_game VALUES(?, ?, ?, ?, ?) " +
                 "ON DUPLICATE KEY UPDATE gameId = gameId";
 
         jdbcTemplate.update(connection -> {
@@ -146,6 +146,7 @@ public class GameRepository {
                 preparedStatement.setObject(2, game.getGameId().toString());
                 preparedStatement.setObject(3, game.getOwnerId().toString());
                 preparedStatement.setObject(4, game.getProposerId().toString());
+                preparedStatement.setObject(5, game.isChosen());
 
                 preparedStatement.addBatch();
 

@@ -45,11 +45,8 @@ export class CollectionPage implements OnInit {
   }
 
   async import() {
-    console.log("import");
     var collectionGames = this.bggService.getUserCollection(this.globals.user.bggUsername);
-    console.log(collectionGames);
     var newGames = collectionGames.filter(ng => this.games.find(g => g.bggId == ng.bggId) == null);
-    console.log(newGames);
     if (newGames.length > 0) {
       this.gameService.importCollection(this.globals.user.id, newGames)
         .subscribe(

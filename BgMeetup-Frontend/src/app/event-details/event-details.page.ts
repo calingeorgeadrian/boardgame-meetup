@@ -5,14 +5,17 @@ import { EventParticipantsListPage } from '../event-participants-list/event-part
 import { GameDetailsPage } from '../game-details/game-details.page';
 import { Globals } from '../globals';
 import { InvitePage } from '../invite/invite.page';
+import { LeaderboardFormPage } from '../leaderboard-form/leaderboard-form.page';
+import { LeaderboardPage } from '../leaderboard/leaderboard.page';
 import { EventModel } from '../models/event.model';
 import { EventParticipantModel } from '../models/eventParticipant.model';
+import { FeedbackModel } from '../models/feedback.model';
+import { LeaderboardScoreModel } from '../models/leaderboardScore.model';
 import { ProposedGameModel } from '../models/proposedGame.model';
 import { UserModel } from '../models/user.model';
 import { ProposeGamesPage } from '../propose-games/propose-games.page';
 import { EventService } from '../services/event.service';
 import { GameService } from '../services/game.service.';
-import { UserService } from '../services/user.service';
 import { VoteGamesPage } from '../vote-games/vote-games.page';
 
 @Component({
@@ -26,6 +29,7 @@ export class EventDetailsPage implements OnInit {
   eventHost: UserModel = new UserModel();
   participants: EventParticipantModel[] = [];
   proposedGames: ProposedGameModel[] = [];
+  leaderboardScores: LeaderboardScoreModel[] = [];
   chosenGames: any[] = [];
 
   isInvited: boolean = false;
@@ -36,8 +40,9 @@ export class EventDetailsPage implements OnInit {
   canVoteGames: boolean = false;
   canChooseGames: boolean = false;
   canCheckIn: boolean = false;
-  canConfirmEvent: boolean = false;
   checkedIn: boolean = false;
+  canConfirmEvent: boolean = false;
+  leaderboardFilled: boolean = false;
 
   constructor(private route: ActivatedRoute,
     private router: Router,
@@ -57,8 +62,8 @@ export class EventDetailsPage implements OnInit {
           this.chosenGames = [];
           this.eventService.getEvent(this.id).subscribe(eventDetails => {
             this.event = eventDetails;
-
             this.getParticipants();
+            this.getLeaderboard();
           });
         }
       });
@@ -171,6 +176,9 @@ export class EventDetailsPage implements OnInit {
       .subscribe(
         saveResult => {
           if (saveResult.result) {
+            this.canCheckIn = false;
+            this.canConfirmEvent = false;
+            this.event.status = 1;
             this.presentToast("Event confirmed!", "success");
           }
         });
@@ -270,5 +278,31 @@ export class EventDetailsPage implements OnInit {
             this.locationInputVisible = false;
           }
         });
+  }
+
+  async getLeaderboard() {
+    this.eventService.getLeaderboard(this.id).subscribe(leaderboardScores => {
+      this.leaderboardScores = leaderboardScores;
+      this.leaderboardFilled = leaderboardScores.length > 0;
+    });
+  }
+
+  async fillLeaderboard() {
+    const modal = await this.modalController.create({
+      component: LeaderboardFormPage,
+      componentProps: { eventId: this.event.id }
+    });
+    modal.onDidDismiss().then((data: any) => {
+      this.getLeaderboard();
+    });
+    return await modal.present();
+  }
+
+  async viewLeaderboard() {
+    const modal = await this.modalController.create({
+      component: LeaderboardPage,
+      componentProps: { eventId: this.event.id }
+    });
+    return await modal.present();
   }
 }

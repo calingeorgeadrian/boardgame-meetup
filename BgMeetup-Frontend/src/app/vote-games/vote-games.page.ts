@@ -46,20 +46,22 @@ export class VoteGamesPage implements OnInit {
       proposedGames => {
         this.participants.forEach(p => {
           var proposerGames = proposedGames.filter(g => g.proposerId == p.participantId);
-          this.games.push({
-            proposerId: p.participantId,
-            proposer: p.participantName,
-            games: proposerGames.map(game => {
-              var temp = Object.assign({}, game);
-              if (this.actionType == 0) {
-                temp.isSelected = (this.votes.filter(vg => vg.gameId == game.gameId && vg.voterId == this.globals.user.id).length > 0);
-              }
-              else if (this.actionType == 1) {
-                temp.isSelected = (proposedGames.filter(vg => vg.gameId == game.gameId)[0].isChosen);
+          if (proposerGames.length > 0) {
+            this.games.push({
+              proposerId: p.participantId,
+              proposer: p.participantName,
+              games: proposerGames.map(game => {
+                var temp = Object.assign({}, game);
+                if (this.actionType == 0) {
+                  temp.isSelected = (this.votes.filter(vg => vg.gameId == game.gameId && vg.voterId == this.globals.user.id).length > 0);
+                }
+                else if (this.actionType == 1) {
+                  temp.isSelected = (proposedGames.filter(vg => vg.gameId == game.gameId)[0].isChosen);
                 }
                 return temp;
               })
-          });
+            });
+          }
         });
       });
 
@@ -97,7 +99,6 @@ export class VoteGamesPage implements OnInit {
       });
     });
 
-    console.log(selectedGames);
     this.gameService.voteGames(this.eventId, this.globals.user.id, selectedGames).subscribe(
       saveResult => {
         if (saveResult.result) {
@@ -111,7 +112,6 @@ export class VoteGamesPage implements OnInit {
     this.games.forEach(owner => {
       owner.games.forEach(g => {
         if (g.isSelected) {
-          console.log(g);
           var v = new ProposedGameModel();
           v.eventId = this.eventId;
           v.ownerId = g.ownerId;
@@ -132,7 +132,6 @@ export class VoteGamesPage implements OnInit {
   }
 
   clear() {
-    console.log(this.games);
     this.games.forEach(o => {
       o.games.forEach(g => {
         if (g.isSelected) {
@@ -140,6 +139,5 @@ export class VoteGamesPage implements OnInit {
         }
       });
     });
-    console.log(this.games);
   }
 }

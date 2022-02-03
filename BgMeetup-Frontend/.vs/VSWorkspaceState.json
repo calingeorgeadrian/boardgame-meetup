@@ -4,13 +4,13 @@
     "\\src",
     "\\src\\app",
     "\\src\\app\\event-details",
-    "\\src\\app\\events-list",
-    "\\src\\app\\invite",
-    "\\src\\app\\propose-games",
-    "\\src\\app\\tabs",
-    "\\src\\app\\vote-games",
-    "\\src\\environments"
+    "\\src\\app\\event-participants-list",
+    "\\src\\app\\feedback-form",
+    "\\src\\app\\leaderboard",
+    "\\src\\app\\leaderboard-form",
+    "\\src\\app\\models",
+    "\\src\\app\\services"
   ],
-  "SelectedNode": "\\src\\app\\models\\proposedGame.model.ts",
+  "SelectedNode": "\\src\\app\\event-details\\event-details.page.html",
   "PreviewInSolutionExplorer": false
 }
