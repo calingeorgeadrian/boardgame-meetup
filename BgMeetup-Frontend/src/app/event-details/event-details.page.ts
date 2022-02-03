@@ -9,6 +9,7 @@ import { LeaderboardFormPage } from '../leaderboard-form/leaderboard-form.page';
 import { LeaderboardPage } from '../leaderboard/leaderboard.page';
 import { EventModel } from '../models/event.model';
 import { EventParticipantModel } from '../models/eventParticipant.model';
+import { FeedbackModel } from '../models/feedback.model';
 import { LeaderboardScoreModel } from '../models/leaderboardScore.model';
 import { ProposedGameModel } from '../models/proposedGame.model';
 import { UserModel } from '../models/user.model';
@@ -61,7 +62,6 @@ export class EventDetailsPage implements OnInit {
           this.chosenGames = [];
           this.eventService.getEvent(this.id).subscribe(eventDetails => {
             this.event = eventDetails;
-
             this.getParticipants();
             this.getLeaderboard();
           });
@@ -176,6 +176,9 @@ export class EventDetailsPage implements OnInit {
       .subscribe(
         saveResult => {
           if (saveResult.result) {
+            this.canCheckIn = false;
+            this.canConfirmEvent = false;
+            this.event.status = 1;
             this.presentToast("Event confirmed!", "success");
           }
         });

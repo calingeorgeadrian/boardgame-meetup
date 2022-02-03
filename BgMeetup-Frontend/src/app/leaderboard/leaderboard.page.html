@@ -13,11 +13,30 @@
         </ion-avatar>
         <ion-label>{{game.title}}</ion-label>
       </ion-item-divider>
-      <ion-item *ngFor="let participantScore of game.participantsScores">
+      <ion-item-sliding *ngFor="let participantScore of game.participantsScores">
+        <ion-item>
+          <ion-label>{{participantScore.participantName}}</ion-label>
+          <ion-label class="ion-text-right">{{participantScore.score}}</ion-label>
+        </ion-item>
 
-        <ion-label>{{participantScore.participantName}}</ion-label>
-        <ion-label class="ion-text-right">{{participantScore.score}}</ion-label>
-      </ion-item>
+        <ion-item-options side="end" *ngIf="participantScore.participantId != globals.user.id">
+          <div style="width: 100px; height: 48px; line-height: 24px; text-align: center; color: #28ba62;"
+               *ngIf="!checkForFeedback(participantScore)">
+            <span>Feedback<br />given!</span>
+          </div>
+          <ion-item-option color="success" *ngIf="checkForFeedback(participantScore)" (click)="praise(participantScore)">Praise</ion-item-option>
+          <ion-item-option color="danger" *ngIf="checkForFeedback(participantScore)" (click)="report(participantScore)">Report</ion-item-option>
+          <ion-item-option color="warning" *ngIf="checkForFeedback(participantScore)" (click)="mvp(participantScore)">MVP</ion-item-option>
+        </ion-item-options>
+
+      </ion-item-sliding>
     </ion-item-group>
   </ion-list>
 </ion-content>
+
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button color="danger" expand="full" (click)="dismiss()">Close</ion-button>
+  </ion-toolbar>
+</ion-footer>

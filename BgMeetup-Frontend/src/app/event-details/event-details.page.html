@@ -75,12 +75,28 @@
           <ion-card-content>
             <div style="text-align: center;">
               <ion-label>The following participants should bring these games:</ion-label>
-              <ion-item *ngFor="let item of chosenGames">
-                <ion-label>{{item.owner}}</ion-label>
-                <span *ngFor="let game of item.games; last as isLast">
-                  {{game.title}}<span *ngIf="!isLast">,&nbsp;</span>
-                </span>
-              </ion-item>
+
+
+              <ion-item-group *ngFor="let item of chosenGames">
+                <ion-item-divider>
+                  <ion-label>{{item.owner}}</ion-label>
+                </ion-item-divider>
+                <ion-item-sliding *ngFor="let game of item.games">
+
+                  <ion-item>
+                    <ion-avatar slot="start">
+                      <img src="{{game.imageUrl}}">
+                    </ion-avatar>
+                    <ion-label>{{game.title}}</ion-label>
+                  </ion-item>
+
+                  <ion-item-options side="end">
+                    <ion-item-option color="primary" (click)="viewGame(game.bggId)">View</ion-item-option>
+                  </ion-item-options>
+
+                </ion-item-sliding>
+              </ion-item-group>
+
             </div>
           </ion-card-content>
         </ion-col>
@@ -147,7 +163,7 @@
                    (ionBlur)="saveLocation()"
                    (keyup.enter)="saveLocation()"></ion-input>
       </ion-label>
-      <ion-icon slot="end" name="create-outline" (click)="editLocation()">
+      <ion-icon slot="end" name="create-outline" *ngIf="globals.user.id == event.hostId" (click)="editLocation()">
       </ion-icon>
     </ion-item>
   </ion-list>

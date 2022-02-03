@@ -92,3 +92,14 @@ CREATE TABLE `score` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+
+CREATE TABLE `feedback` (
+  `id` varchar(36) NOT NULL,
+  `eventId` varchar(36) NOT NULL,
+  `gameId` varchar(36) NOT NULL,
+  `participantId` varchar(36) NOT NULL,
+  `feedbackGiverId` varchar(36) NOT NULL,
+  `type` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+

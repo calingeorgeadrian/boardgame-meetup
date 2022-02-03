@@ -48,8 +48,7 @@ export class BGGService {
       }
     }
     catch (error) {
-      console.log(error);
-      console.log("could not retrieve collection for username " + username);
+      console.log("Could not retrieve collection for username " + username);
     }
 
     return games;
@@ -81,8 +80,7 @@ export class BGGService {
       return game;
     }
     catch (error) {
-      console.log(error);
-      console.log("could not retrieve info for game with id " + id);
+      console.log("Could not retrieve info for game with id " + id);
       return null;
     }
   }

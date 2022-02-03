@@ -1,9 +1,6 @@
 package com.bgmeetup.backend.service;
 
-import com.bgmeetup.backend.domain.Event;
-import com.bgmeetup.backend.domain.EventParticipant;
-import com.bgmeetup.backend.domain.LeaderboardScore;
-import com.bgmeetup.backend.domain.ProposedGame;
+import com.bgmeetup.backend.domain.*;
 import com.bgmeetup.backend.dto.*;
 import com.bgmeetup.backend.enums.InviteStatus;
 import com.bgmeetup.backend.exceptions.EntityNotFoundException;
@@ -48,6 +45,8 @@ public class EventService {
         var dateParts  = dateString.split("T");
         event.setDateString(dateParts[0] + " " + dateParts[1]);
         event.setDate(null);
+        var host = userService.get(event.getHostId().toString());
+        event.setHostName(host.getLastName() + " " + host.getFirstName());
         var participants = eventRepository.getParticipants(event.getId().toString());
         var participantsCount = participants.size();
         event.setParticipantsCount(participantsCount);
@@ -69,6 +68,8 @@ public class EventService {
             var participant = participants.stream().filter(p -> p.getParticipantId().toString().equals(userId)).findFirst();
             if(participant.isPresent()){
                 event.setStatus(participant.get().getStatus());
+                var inviter = userService.get(participant.get().getInviterId().toString());
+                event.setInvitedBy(inviter.getLastName() + " " + inviter.getFirstName());
             }
             else
                 event.setStatus(InviteStatus.NotInvited.getValue());
@@ -168,5 +169,14 @@ public class EventService {
         }
 
         return leaderboard;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public SaveResult submitFeedback(List<Feedback> requests) {
+        return eventRepository.submitFeedback(requests);
+    }
+
+    public List<Feedback> getFeedback(String eventId) {
+        return eventRepository.getFeedback(eventId);
     }
 }

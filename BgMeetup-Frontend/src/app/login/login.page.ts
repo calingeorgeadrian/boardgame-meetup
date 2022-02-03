@@ -38,7 +38,6 @@ export class LoginPage implements OnInit {
       .subscribe(
         data => {
           if (data) {
-            console.log(this.globals);
             this.presentToast();
             this.router.navigate(['/tabs/profile'], { replaceUrl: true });
           }

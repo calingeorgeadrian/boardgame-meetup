@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController, NavParams } from '@ionic/angular';
+import { FeedbackFormPage } from '../feedback-form/feedback-form.page';
 import { Globals } from '../globals';
 import { EventParticipantModel } from '../models/eventParticipant.model';
+import { FeedbackModel } from '../models/feedback.model';
 import { LeaderboardGameModel } from '../models/leaderboardGame.model';
 import { LeaderboardScoreModel } from '../models/leaderboardScore.model';
 import { BGGService } from '../services/bgg.service';
@@ -17,6 +19,7 @@ import { UserService } from '../services/user.service';
 export class LeaderboardPage implements OnInit {
   leaderboardGames: LeaderboardGameModel[] = [];
   eventId: any;
+  feedbacks: FeedbackModel[] = [];
   participants: EventParticipantModel[] = [];
 
   constructor(private navParams: NavParams,
@@ -31,6 +34,7 @@ export class LeaderboardPage implements OnInit {
 
   ngOnInit() {
     this.getParticipants();
+    this.getFeedback();
   }
 
   async getParticipants() {
@@ -67,7 +71,61 @@ export class LeaderboardPage implements OnInit {
         });
   }
 
+  async getFeedback() {
+    this.eventService.getFeedback(this.eventId).subscribe(feedback => {
+      this.feedbacks = feedback;
+    });
+  }
+
   dismiss() {
     this.viewCtrl.dismiss();
+  }
+
+  checkForFeedback(score) {
+    var canGiveFeedback = this.feedbacks.filter(f => f.gameId == score.gameId &&
+      f.participantId == score.participantId &&
+      f.feedbackGiverId == this.globals.user.id).length == 0;
+    return canGiveFeedback;
+  }
+
+  async praise(score) {
+    const modal = await this.viewCtrl.create({
+      component: FeedbackFormPage,
+      componentProps: { eventId: this.eventId, score: score, actionType: "praise" }
+    });
+    modal.onDidDismiss().then((data: any) => {
+      this.getFeedback();
+    });
+    return await modal.present();
+  }
+
+  async report(score) {
+    const modal = await this.viewCtrl.create({
+      component: FeedbackFormPage,
+      componentProps: { eventId: this.eventId, score: score, actionType: "report" }
+    });
+    modal.onDidDismiss().then((data: any) => {
+      this.getFeedback();
+    });
+    return await modal.present();
+  }
+
+  async mvp(score) {
+    var feedback = [];
+    var mvp = new FeedbackModel();
+    mvp.eventId = score.eventId;
+    mvp.gameId = score.gameId;
+    mvp.participantId = score.participantId;
+    mvp.feedbackGiverId = this.globals.user.id;
+    mvp.type = 100;
+    feedback.push(mvp);
+
+    this.eventService.submitFeedback(feedback)
+      .subscribe(
+        saveResult => {
+          if (saveResult.result) {
+            this.getFeedback();
+          }
+        });
   }
 }

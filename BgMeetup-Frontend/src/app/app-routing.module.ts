@@ -65,6 +65,10 @@ const routes: Routes = [
   {
     path: 'leaderboard',
     loadChildren: () => import('./leaderboard/leaderboard.module').then( m => m.LeaderboardPageModule)
+  },
+  {
+    path: 'feedback-form',
+    loadChildren: () => import('./feedback-form/feedback-form.module').then( m => m.FeedbackFormPageModule)
   }
 ];
 @NgModule({

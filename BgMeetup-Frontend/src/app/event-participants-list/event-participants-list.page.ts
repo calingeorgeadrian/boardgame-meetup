@@ -17,7 +17,6 @@ export class EventParticipantsListPage implements OnInit {
     private eventService: EventService) {
     this.event = navParams.get('event');
     this.participants = navParams.get('participants');
-    console.log(this.participants);
   }
 
   ngOnInit() {

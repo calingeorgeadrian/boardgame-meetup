@@ -42,16 +42,18 @@ export class ProposeGamesPage implements OnInit {
       this.gameService.getCollection(p.participantId)
         .subscribe(
           collection => {
-            this.games.push({
-              ownerId: p.participantId,
-              owner: p.participantName,
-              games: collection.filter(g => this.proposedGames.filter(pg => pg.bggId == g.bggId && pg.proposerId != this.globals.user.id).length == 0)
-                .map(game => {
-                  var temp = Object.assign({}, game);
-                  temp.isSelected = (this.proposedGames.filter(pg => pg.bggId == game.bggId && pg.proposerId == this.globals.user.id).length > 0);
-                  return temp;
-                })
-            });
+            if (collection.length > 0) {
+              this.games.push({
+                ownerId: p.participantId,
+                owner: p.participantName,
+                games: collection.filter(g => this.proposedGames.filter(pg => pg.bggId == g.bggId && pg.proposerId != this.globals.user.id).length == 0)
+                  .map(game => {
+                    var temp = Object.assign({}, game);
+                    temp.isSelected = (this.proposedGames.filter(pg => pg.bggId == game.bggId && pg.proposerId == this.globals.user.id).length > 0);
+                    return temp;
+                  })
+              });
+            }
           });
     });
     this.games.sort(function (a, b) {
@@ -87,7 +89,6 @@ export class ProposeGamesPage implements OnInit {
         }
       });
     });
-    console.log(selectedGames);
 
     this.gameService.proposeGames(this.eventId, this.globals.user.id, selectedGames)
       .subscribe(
@@ -99,7 +100,6 @@ export class ProposeGamesPage implements OnInit {
   }
 
   clear() {
-    console.log(this.games);
     this.games.forEach(o => {
       o.games.forEach(g => {
         if (g.isSelected) {
@@ -107,6 +107,5 @@ export class ProposeGamesPage implements OnInit {
         }
       });
     });
-    console.log(this.games);
   }
 }

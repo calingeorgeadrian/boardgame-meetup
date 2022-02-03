@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Feedback</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item-group *ngFor="let feedback of feedbackTypes">
+      <ion-item>
+        <ion-label>{{feedback.title}}</ion-label>
+        <ion-checkbox slot="end" [(ngModel)]="feedback.isSelected"></ion-checkbox>
+      </ion-item>
+    </ion-item-group>
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button color="success" expand="full" (click)="submit()">Submit feedback</ion-button>
+    <ion-button color="danger" expand="full" (click)="dismiss()">Close</ion-button>
+  </ion-toolbar>
+</ion-footer>

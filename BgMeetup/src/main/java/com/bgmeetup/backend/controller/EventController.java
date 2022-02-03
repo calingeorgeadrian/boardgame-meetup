@@ -1,5 +1,6 @@
 package com.bgmeetup.backend.controller;
 
+import com.bgmeetup.backend.domain.Feedback;
 import com.bgmeetup.backend.dto.*;
 import com.bgmeetup.backend.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,5 +95,15 @@ public class EventController {
     @GetMapping(path = "/getLeaderboard/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<LeaderboardScoreDto> getLeaderboard(@PathVariable String eventId) {
         return eventService.getLeaderboard(eventId);
+    }
+
+    @PostMapping(path = "/submitFeedback", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult submitFeedback(@Valid @RequestBody List<Feedback> requests) {
+        return eventService.submitFeedback(requests);
+    }
+
+    @GetMapping(path = "/getFeedback/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Feedback> getFeedback(@PathVariable String eventId) {
+        return eventService.getFeedback(eventId);
     }
 }

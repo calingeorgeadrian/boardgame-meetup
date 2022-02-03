@@ -73,7 +73,6 @@ export class LeaderboardFormPage implements OnInit {
 
   submit() {
     var scores = this.leaderboardGames.map(g => g.participantsScores).reduce((acc, it) => [...acc, ...it], []);
-
     this.eventService.submitLeaderboard(scores)
       .subscribe(
         saveResult => {
