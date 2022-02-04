@@ -36,9 +36,9 @@ public class FriendService {
         return friendRepository.getFriends(userId);
     }
 
-    public SaveResult sendFriendRequest(String userId, String email) {
+    public void sendFriendRequest(String userId, String email) {
         UserDto userDto = userRepository.getByEmail(email).orElseThrow(()-> new EntityNotFoundException("User"));
-        return friendRepository.sendFriendRequest(userId, userDto.getId().toString());
+        friendRepository.sendFriendRequest(userId, userDto.getId().toString());
     }
 
     public List<FriendInvitationDto> getFriendRequestsReceived(String userId) {

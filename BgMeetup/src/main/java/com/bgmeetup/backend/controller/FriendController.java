@@ -25,13 +25,16 @@ public class FriendController {
 
     @GetMapping(path="/getFriends/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<FriendDto> getFriends(@PathVariable String userId) {
-        List<FriendDto> f = friendService.getFriends(userId);
-        return f;
+        return friendService.getFriends(userId);
     }
 
     @PostMapping(path="/friendRequest/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SaveResult sendFriendRequest(@PathVariable String userId, @RequestBody String email) {
-        return friendService.sendFriendRequest(userId, email);
+    public List<FriendInvitationDto> sendFriendRequest(@PathVariable String userId, @RequestBody String email) {
+        friendService.sendFriendRequest(userId, email);
+        List<FriendInvitationDto> friendInvitationDtoList = new ArrayList<>();
+        friendInvitationDtoList.addAll(friendService.getFriendRequestsSent(userId));
+        friendInvitationDtoList.addAll(friendService.getFriendRequestsReceived(userId));
+        return friendInvitationDtoList;
     }
 
     @GetMapping(path="/friendRequestsReceived/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)

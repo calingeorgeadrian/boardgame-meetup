@@ -50,44 +50,15 @@ export class UserService {
   }
 
   getFriendRequests(id: any): Observable<FriendRequestModel[]> {
-    // getFriendRequests(id: any): FriendRequestModel[] {
-    //   var requests = [];
-    //
-    //   var request1 = new FriendRequestModel();
-    //   request1.id = "40b7deed-e4a2-4b3c-ac35-4b8f5407b874";
-    //   request1.email = "alexion@gmail.com";
-    //   request1.name = "Alexandru Ionescu";
-    //   request1.senderId = "40b7deed-e4a2-4b3c-ac35-4b8f5407b874";
-    //   request1.receiverId = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a3bbc";
-    //   requests.push(request1);
-    //
-    //   var request2 = new FriendRequestModel();
-    //   request2.id = "40b7deed-e4a2-4b3c-ac35-4b8f5407b874";
-    //   request2.email = "popandrei@gmail.com";
-    //   request2.name = "Andrei Popa";
-    //   request2.senderId = "1cae9b1b-b7a2-46a2-a43d-9bd54d7a3bbc";
-    //   request2.receiverId = "fc540693-4534-4904-affa-360bd86c6601";
-    //   requests.push(request2);
-    //
-    //   return requests;
     return this.http.get<FriendRequestModel[]>(environment.apiUrl + '/friends/friendRequests/' + id);
   }
 
   sendFriendRequest(friendRequestModel: FriendRequestModel) {
-    // var saveResult = new SaveResult();
-    // saveResult.result = true;
-    // saveResult.errors = null;
-    //
-    // return saveResult;
-
     let formData: FormData = new FormData();
     formData.append('email', friendRequestModel.email);
 
-    return this.http.post<SaveResult>(environment.apiUrl +
-      '/friends/friendRequest/' + friendRequestModel.senderId, friendRequestModel.email)
-      .pipe(returnValue => {
-        return returnValue;
-      });
+    return this.http.post<FriendRequestModel[]>(environment.apiUrl +
+      '/friends/friendRequest/' + friendRequestModel.senderId, friendRequestModel.email);
   }
 
   acceptFriendRequest(item: FriendRequestModel): Observable<any> {

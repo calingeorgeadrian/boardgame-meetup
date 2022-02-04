@@ -50,7 +50,7 @@ public class FriendRepository {
         );
     }
 
-    public SaveResult sendFriendRequest(String senderId, String receiverId) {
+    public void sendFriendRequest(String senderId, String receiverId) {
         String sql = "INSERT INTO pending_friend_request VALUES(?, ?)";
 
         jdbcTemplate.update(connection -> {
@@ -59,8 +59,6 @@ public class FriendRepository {
             preparedStatement.setObject(2, receiverId);
             return preparedStatement;
         });
-
-        return new SaveResult(true, null);
     }
 
     public List<String> getSenderIdsForReceivedFriendRequests(String userId) {
