@@ -29,8 +29,6 @@ export class FriendsPage implements OnInit {
   }
 
   getFriends() {
-    // this.friends = this.userService.getFriends(this.globals.user.id);
-
     this.userService.getFriends(this.globals.user.id).subscribe(friends => {
       this.friends = friends;
     });
@@ -41,8 +39,6 @@ export class FriendsPage implements OnInit {
       this.friendRequests = friendRequests;
       this.receivedFriendRequests = this.friendRequests.filter(fr => fr.receiverId === this.globals.user.id);
       this.sentFriendRequests = this.friendRequests.filter(fr => fr.senderId === this.globals.user.id);
-      console.log(friendRequests);
-      console.log(this.sentFriendRequests);
     });
   }
 
@@ -56,15 +52,9 @@ export class FriendsPage implements OnInit {
     this.userService.sendFriendRequest(friendRequest)
       .subscribe(
         friendRequests => {
-          console.log(friendRequests);
           this.friendRequests = friendRequests;
-          // if (friendRequests.length) {
             this.receivedFriendRequests = this.friendRequests.filter(fr => fr.receiverId === this.globals.user.id);
             this.sentFriendRequests = this.friendRequests.filter(fr => fr.senderId === this.globals.user.id);
-          // } else {
-          //   this.receivedFriendRequests = [];
-          //   this.sentFriendRequests = [];
-          // }
           this.presentToast('Friend request sent.', 'success');
         });
   }
@@ -89,7 +79,6 @@ export class FriendsPage implements OnInit {
           var friendRequest = this.receivedFriendRequests
             .find(fr => fr.senderId === friendRequestModel.senderId && fr.receiverId === friendRequestModel.receiverId);
           var newFriend = new FriendModel();
-          console.log(friendRequest);
           newFriend.friendId = friendRequest.senderId;
           newFriend.name = friendRequest.name;
           this.friends.push(newFriend);

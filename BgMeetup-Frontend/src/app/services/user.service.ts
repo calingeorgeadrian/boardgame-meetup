@@ -1,14 +1,11 @@
 import {HttpClient} from "@angular/common/http";
 import {Injectable} from "@angular/core";
 import {Observable} from "rxjs";
-import {map} from "rxjs/operators";
 import {environment} from "../../environments/environment";
 import {Globals} from "../globals";
 import {FriendModel} from "../models/friend.model";
 import {FriendRequestModel} from "../models/friendRequest.model";
-import {SaveResult} from "../models/saveResult";
 import {UserModel} from "../models/user.model";
-import {UserLogin} from "../models/userLogin.model";
 
 @Injectable({providedIn: 'root'})
 export class UserService {
@@ -62,13 +59,6 @@ export class UserService {
   }
 
   acceptFriendRequest(item: FriendRequestModel): Observable<any> {
-  // acceptFriendRequest(id: any): any {
-  //   var saveResult = new SaveResult();
-  //   saveResult.result = true;
-  //   saveResult.errors = null;
-  //
-  //   return saveResult;
-
     return this.http.get<any>(environment.apiUrl + '/friends/friendRequest/' + item.senderId + '/accept/' + item.receiverId);
   }
 
