@@ -1,6 +1,7 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Vote games</ion-title>
+    <ion-title *ngIf="actionType == 0">Vote games</ion-title>
+    <ion-title *ngIf="actionType == 1">Choose games</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -14,14 +15,14 @@
 
         <ion-item>
           <ion-avatar slot="start">
-            <img src="{{game.image}}">
+            <img src="{{game.imageUrl}}">
           </ion-avatar>
-          <ion-label>{{game.title}}</ion-label>
+          <ion-label>{{game.title}} - {{game.votes}}</ion-label>
           <ion-checkbox slot="end" [(ngModel)]="game.isSelected"></ion-checkbox>
         </ion-item>
 
         <ion-item-options side="end">
-          <ion-item-option color="primary" (click)="viewGame(game.id)">View</ion-item-option>
+          <ion-item-option color="primary" (click)="viewGame(game.bggId)">View</ion-item-option>
         </ion-item-options>
 
       </ion-item-sliding>
@@ -31,8 +32,8 @@
 
 <ion-footer>
   <ion-toolbar>
-    <ion-button color="primary" expand="full" (click)="clear()">Clear votes</ion-button>
-    <ion-button color="success" expand="full" (click)="vote()" *ngIf="actionType == 0">Propose</ion-button>
+    <ion-button color="primary" expand="full" (click)="clear()">Clear</ion-button>
+    <ion-button color="success" expand="full" (click)="vote()" *ngIf="actionType == 0">Vote</ion-button>
     <ion-button color="success" expand="full" (click)="choose()" *ngIf="actionType == 1">Choose</ion-button>
     <ion-button color="danger" expand="full" (click)="dismiss()">Close</ion-button>
   </ion-toolbar>

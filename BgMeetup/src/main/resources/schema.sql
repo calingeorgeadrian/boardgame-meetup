@@ -15,11 +15,14 @@ CREATE TABLE `event` (
 
 CREATE TABLE `event_participant` (
   `eventId` varchar(36) NOT NULL,
-  `participantId` varchar(36) NOT NULL,
+  `participantId` varchar(36) DEFAULT NULL,
   `inviterId` varchar(36) NOT NULL,
+  `email` varchar(128) NOT NULL,
   `status` int(11) NOT NULL,
-  PRIMARY KEY (`eventId`,`participantId`,`inviterId`)
+  `checkedIn` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`eventId`,`email`,`inviterId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 
 CREATE TABLE `user` (
@@ -33,6 +36,7 @@ CREATE TABLE `user` (
   `passwordSalt` varbinary(128) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 CREATE TABLE `game` (
   `id` varchar(36) NOT NULL,
@@ -57,6 +61,48 @@ CREATE TABLE `collection` (
   `gameBggId` bigint(20) NOT NULL,
   PRIMARY KEY (`userId`,`gameBggId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `proposed_game` (
+  `eventId` varchar(36) NOT NULL,
+  `gameId` varchar(36) NOT NULL,
+  `ownerId` varchar(36) NOT NULL,
+  `proposerId` varchar(36) NOT NULL,
+  `isChosen` bit(1) NOT NULL,
+  PRIMARY KEY (`eventId`,`gameId`,`ownerId`,`proposerId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+CREATE TABLE `vote` (
+  `eventId` varchar(36) NOT NULL,
+  `gameId` varchar(36) NOT NULL,
+  `ownerId` varchar(36) NOT NULL,
+  `voterId` varchar(36) NOT NULL,
+  PRIMARY KEY (`eventId`,`gameId`,`ownerId`,`voterId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `score` (
+  `id` varchar(36) NOT NULL,
+  `eventId` varchar(36) NOT NULL,
+  `gameId` varchar(36) NOT NULL,
+  `participantId` varchar(36) NOT NULL,
+  `score` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `feedback` (
+  `id` varchar(36) NOT NULL,
+  `eventId` varchar(36) NOT NULL,
+  `gameId` varchar(36) NOT NULL,
+  `participantId` varchar(36) NOT NULL,
+  `feedbackGiverId` varchar(36) NOT NULL,
+  `type` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 CREATE TABLE `friends` (
     `id` varchar(36) NOT NULL,

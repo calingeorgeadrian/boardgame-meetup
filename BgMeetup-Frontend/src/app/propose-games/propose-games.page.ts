@@ -6,6 +6,7 @@ import { EventParticipantModel } from '../models/eventParticipant.model';
 import { ProposedGameModel } from '../models/proposedGame.model';
 import { BGGService } from '../services/bgg.service';
 import { EventService } from '../services/event.service';
+import { GameService } from '../services/game.service.';
 import { UserService } from '../services/user.service';
 
 @Component({
@@ -14,6 +15,7 @@ import { UserService } from '../services/user.service';
   styleUrls: ['./propose-games.page.scss'],
 })
 export class ProposeGamesPage implements OnInit {
+  proposedGames: ProposedGameModel[] = [];
   games: any[] = [];
   eventId: any;
   participants: EventParticipantModel[] = [];
@@ -23,17 +25,36 @@ export class ProposeGamesPage implements OnInit {
     public globals: Globals,
     private eventService: EventService,
     private bggService: BGGService,
+    private gameService: GameService,
     private userService: UserService) {
     this.participants = navParams.get('participants');
     this.eventId = navParams.get('eventId');
   }
 
   ngOnInit() {
+    this.gameService.getProposedGames(this.eventId)
+    .subscribe(
+      proposedGames => {
+        this.proposedGames = proposedGames;
+      });
+
     this.participants.forEach(p => {
-      if (p.status === 1 && p.bggUsername != null) {
-        var userCollection = this.bggService.getUserCollection(p.bggUsername);
-        this.games.push({ ownerId: p.id, owner: p.participantName, games: userCollection });
-      }
+      this.gameService.getCollection(p.participantId)
+        .subscribe(
+          collection => {
+            if (collection.length > 0) {
+              this.games.push({
+                ownerId: p.participantId,
+                owner: p.participantName,
+                games: collection.filter(g => this.proposedGames.filter(pg => pg.bggId == g.bggId && pg.proposerId != this.globals.user.id).length == 0)
+                  .map(game => {
+                    var temp = Object.assign({}, game);
+                    temp.isSelected = (this.proposedGames.filter(pg => pg.bggId == game.bggId && pg.proposerId == this.globals.user.id).length > 0);
+                    return temp;
+                  })
+              });
+            }
+          });
     });
     this.games.sort(function (a, b) {
       var textA = a.owner.toUpperCase();
@@ -68,22 +89,17 @@ export class ProposeGamesPage implements OnInit {
         }
       });
     });
-    console.log(selectedGames);
-    var saveResult = this.eventService.submitProposals(selectedGames, this.globals.user.id);
-    if (saveResult.result) {
-      this.dismiss();
-    }
 
-    //this.eventService.submitProposals(selectedGames, this.globals.user.id).subscribe(
-    //  saveResult => {
-    //    if (saveResult.result) {
-    //      this.dismiss();
-    //    }
-    //  });
+    this.gameService.proposeGames(this.eventId, this.globals.user.id, selectedGames)
+      .subscribe(
+        saveResult => {
+        if (saveResult.result) {
+          this.dismiss();
+        }
+      });
   }
 
   clear() {
-    console.log(this.games);
     this.games.forEach(o => {
       o.games.forEach(g => {
         if (g.isSelected) {
@@ -91,6 +107,5 @@ export class ProposeGamesPage implements OnInit {
         }
       });
     });
-    console.log(this.games);
   }
 }

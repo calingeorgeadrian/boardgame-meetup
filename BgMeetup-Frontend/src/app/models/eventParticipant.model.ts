@@ -1,5 +1,4 @@
 export class EventParticipantModel {
-  id: string;
   eventId: string;
   participantId: string;
   inviterId: string;
@@ -7,5 +6,5 @@ export class EventParticipantModel {
   email: string;
   bggUsername: string;
   status: number;
-  checkIn: boolean;
+  checkedIn: boolean;
 }

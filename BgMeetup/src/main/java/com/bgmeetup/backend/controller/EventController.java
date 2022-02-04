@@ -1,17 +1,13 @@
 package com.bgmeetup.backend.controller;
 
-import com.bgmeetup.backend.dto.EventDto;
-import com.bgmeetup.backend.dto.EventParticipantDto;
-import com.bgmeetup.backend.dto.SaveResult;
+import com.bgmeetup.backend.domain.Feedback;
+import com.bgmeetup.backend.dto.*;
 import com.bgmeetup.backend.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -37,13 +33,18 @@ public class EventController {
     }
 
     @PostMapping(path = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SaveResult create(@RequestBody EventDto request) throws ParseException {
+    public SaveResult create(@RequestBody EventDto request) {
         return eventService.create(request);
     }
 
     @PostMapping(path = "/update", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public SaveResult update(@RequestBody EventDto request){
         return eventService.update(request);
+    }
+
+    @GetMapping(path = "/cancel/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult cancel(@PathVariable String eventId) {
+        return eventService.cancel(eventId);
     }
 
     @GetMapping(path = "/join/eventId={eventId}/userId={userId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -56,9 +57,29 @@ public class EventController {
         return eventService.leave(eventId, userId);
     }
 
-    @GetMapping(path = "/cancel/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SaveResult cancel(@PathVariable String eventId) {
-        return eventService.cancel(eventId);
+    @GetMapping(path = "/getParticipants/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<EventParticipantDto> getEventParticipants(@PathVariable String eventId) {
+        return eventService.getParticipants(eventId);
+    }
+
+    @PostMapping(path = "/invite", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult invite(@Valid @RequestBody EventParticipantDto request) {
+        return eventService.invite(request);
+    }
+
+    @GetMapping(path = "/acceptInvitation/eventId={eventId}/userId={userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult acceptInvitation(@PathVariable String eventId, @PathVariable String userId) {
+        return eventService.acceptInvitation(eventId, userId);
+    }
+
+    @GetMapping(path = "/declineInvitation/eventId={eventId}/userId={userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult declineInvitation(@PathVariable String eventId, @PathVariable String userId) {
+        return eventService.declineInvitation(eventId, userId);
+    }
+
+    @GetMapping(path = "/checkIn/eventId={eventId}/userId={userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult checkIn(@PathVariable String eventId, @PathVariable String userId) {
+        return eventService.checkIn(eventId, userId);
     }
 
     @GetMapping(path = "/confirm/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -66,14 +87,23 @@ public class EventController {
         return eventService.confirm(eventId);
     }
 
-    @PostMapping(path = "/invite", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EventParticipantDto> invite(@Valid @RequestBody EventParticipantDto request) {
-        eventService.invite(request);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    @PostMapping(path = "/submitLeaderboard", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult submitLeaderboard(@Valid @RequestBody List<LeaderboardScoreDto> requests) {
+        return eventService.submitLeaderboard(requests);
     }
 
-    @GetMapping(path = "/getParticipants/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<EventParticipantDto> getEventParticipants(@PathVariable String eventId) {
-        return eventService.getParticipants(eventId);
+    @GetMapping(path = "/getLeaderboard/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<LeaderboardScoreDto> getLeaderboard(@PathVariable String eventId) {
+        return eventService.getLeaderboard(eventId);
+    }
+
+    @PostMapping(path = "/submitFeedback", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public SaveResult submitFeedback(@Valid @RequestBody List<Feedback> requests) {
+        return eventService.submitFeedback(requests);
+    }
+
+    @GetMapping(path = "/getFeedback/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Feedback> getFeedback(@PathVariable String eventId) {
+        return eventService.getFeedback(eventId);
     }
 }

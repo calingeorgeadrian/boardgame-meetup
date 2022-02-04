@@ -25,6 +25,10 @@ public class UserService {
         return userRepository.get(id).orElseThrow(()-> new EntityNotFoundException("User"));
     }
 
+    public UserDto getByEmail(String email) {
+        return userRepository.getByEmail(email).orElseThrow(()-> new EntityNotFoundException("User"));
+    }
+
     public SaveResult update(User user) {
         return userRepository.update(user);
     }

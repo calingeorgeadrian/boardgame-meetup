@@ -3,14 +3,14 @@
     "",
     "\\src",
     "\\src\\app",
-    "\\src\\app\\collection",
-    "\\src\\app\\game-details",
+    "\\src\\app\\event-details",
+    "\\src\\app\\event-participants-list",
+    "\\src\\app\\feedback-form",
+    "\\src\\app\\leaderboard",
+    "\\src\\app\\leaderboard-form",
     "\\src\\app\\models",
-    "\\src\\app\\profile",
-    "\\src\\app\\services",
-    "\\src\\app\\tabs",
-    "\\src\\environments"
+    "\\src\\app\\services"
   ],
-  "SelectedNode": "\\src\\app\\game-details\\game-details.page.html",
+  "SelectedNode": "\\src\\app\\event-details\\event-details.page.html",
   "PreviewInSolutionExplorer": false
 }

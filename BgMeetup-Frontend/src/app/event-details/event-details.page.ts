@@ -5,12 +5,17 @@ import { EventParticipantsListPage } from '../event-participants-list/event-part
 import { GameDetailsPage } from '../game-details/game-details.page';
 import { Globals } from '../globals';
 import { InvitePage } from '../invite/invite.page';
+import { LeaderboardFormPage } from '../leaderboard-form/leaderboard-form.page';
+import { LeaderboardPage } from '../leaderboard/leaderboard.page';
 import { EventModel } from '../models/event.model';
 import { EventParticipantModel } from '../models/eventParticipant.model';
+import { FeedbackModel } from '../models/feedback.model';
+import { LeaderboardScoreModel } from '../models/leaderboardScore.model';
+import { ProposedGameModel } from '../models/proposedGame.model';
 import { UserModel } from '../models/user.model';
 import { ProposeGamesPage } from '../propose-games/propose-games.page';
 import { EventService } from '../services/event.service';
-import { UserService } from '../services/user.service';
+import { GameService } from '../services/game.service.';
 import { VoteGamesPage } from '../vote-games/vote-games.page';
 
 @Component({
@@ -23,18 +28,21 @@ export class EventDetailsPage implements OnInit {
   event: EventModel = new EventModel();
   eventHost: UserModel = new UserModel();
   participants: EventParticipantModel[] = [];
-  proposedGames: any[] = [];
-  choosenGames: any[] = [];
+  proposedGames: ProposedGameModel[] = [];
+  leaderboardScores: LeaderboardScoreModel[] = [];
+  chosenGames: any[] = [];
 
+  isInvited: boolean = false;
+  isAttending: boolean = false;
   participantsCount: number;
   locationInputVisible: boolean = false;
   canProposeGames: boolean = false;
   canVoteGames: boolean = false;
   canChooseGames: boolean = false;
   canCheckIn: boolean = false;
-  canConfirmEvent: boolean = false;
   checkedIn: boolean = false;
-  isAttending: boolean = false;
+  canConfirmEvent: boolean = false;
+  leaderboardFilled: boolean = false;
 
   constructor(private route: ActivatedRoute,
     private router: Router,
@@ -42,7 +50,7 @@ export class EventDetailsPage implements OnInit {
     public toastController: ToastController,
     public modalController: ModalController,
     private eventService: EventService,
-    private userService: UserService) {
+    private gameService: GameService) {
   }
 
   ngOnInit() {
@@ -51,28 +59,55 @@ export class EventDetailsPage implements OnInit {
       .subscribe(params => {
         this.id = params['id'];
         if (this.id) {
+          this.chosenGames = [];
           this.eventService.getEvent(this.id).subscribe(eventDetails => {
             this.event = eventDetails;
+            this.getParticipants();
+            this.getLeaderboard();
           });
-
-          this.eventService.getParticipants(this.id).subscribe(participants => {
-            this.participants = participants;
-          });
-
-          this.event.participantsCount = this.participants.length;
-          this.proposedGames = this.eventService.getEventProposedGames(this.id);
-          this.choosenGames = this.eventService.getEventChoosenGames(this.id);
-
-          this.isAttending = this.participants.filter(p => p.participantId == this.globals.user.id).length > 0;
-          this.canProposeGames = this.choosenGames.length == 0;
-          this.canVoteGames = this.proposedGames.length > 0;
-          this.canChooseGames = this.proposedGames.filter(g => g.votes > 0).length > 0;
-          this.canCheckIn = this.choosenGames.length > 0;
-          this.canConfirmEvent = this.participants.filter(p => !p.checkIn).length == 0;
-          this.checkedIn = this.participants.filter(p => p.checkIn && p.participantId == this.globals.user.id).length > 0;
-
         }
       });
+  }
+
+  async getParticipants() {
+    this.eventService.getParticipants(this.id).subscribe(participants => {
+      this.participants = participants;
+
+      this.event.participantsCount = this.participants.filter(p => p.status == 1).length;
+      this.getProposedGames();
+      this.isInvited = this.participants.filter(p => p.participantId == this.globals.user.id && p.status == 0).length > 0;
+      this.isAttending = this.participants.filter(p => p.participantId == this.globals.user.id && p.status == 1).length > 0;
+      this.canConfirmEvent = this.event.status != 1 && this.participants.filter(p => !p.checkedIn).length == 0;
+      this.checkedIn = this.participants.filter(p => p.checkedIn && p.participantId == this.globals.user.id).length > 0;
+    });
+  }
+
+  async getProposedGames() {
+    this.gameService.getProposedGames(this.id)
+      .subscribe(
+        proposedGames => {
+          this.proposedGames = proposedGames.sort(function (a, b) {
+            var votesA = a.votes;
+            var votesB = b.votes;
+            return (votesB < votesA) ? -1 : (votesB > votesA) ? 1 : 0;
+          });
+          this.canVoteGames = this.proposedGames.length > 0 && this.proposedGames.filter(pg => pg.isChosen).length == 0;
+          this.canChooseGames = this.proposedGames.filter(g => g.votes > 0).length > 0;
+          this.canProposeGames = this.event.status != 1 && this.proposedGames.filter(pg => pg.isChosen).length == 0;
+          this.canCheckIn = this.event.status != 1 && this.proposedGames.filter(pg => pg.isChosen).length > 0;
+
+          this.participants.forEach(p => {
+            var ownedGames = proposedGames.filter(g => g.ownerId == p.participantId && g.isChosen);
+            if (ownedGames.length > 0) {
+              this.chosenGames.push({
+                ownerId: p.participantId,
+                owner: p.participantName,
+                games: ownedGames
+              });
+            }
+          });
+
+        });
   }
 
   async presentToast(message: string, color: string) {
@@ -85,12 +120,42 @@ export class EventDetailsPage implements OnInit {
   }
 
   async attend() {
-    this.eventService.join(this.event.id, this.globals.user.id)
+    var participant = new EventParticipantModel();
+    participant.email = this.globals.user.email;
+    participant.eventId = this.event.id;
+    participant.participantId = this.globals.user.id;
+    participant.inviterId = this.globals.user.id;
+    participant.status = 1;
+
+    this.eventService.invite(participant)
       .subscribe(
         saveResult => {
           if (saveResult.result) {
             this.isAttending = true;
+            this.getParticipants();
             this.presentToast("Successfully joined the event!", "success");
+          }
+        });
+  }
+
+  acceptInvitation() {
+    this.eventService.acceptInvitation(this.id, this.globals.user.id)
+      .subscribe(
+        saveResult => {
+          if (saveResult.result) {
+            this.getParticipants();
+            this.presentToast('Invitation accepted.', 'success');
+          }
+        });
+  }
+
+  declineInvitation() {
+    this.eventService.declineInvitation(this.id, this.globals.user.id)
+      .subscribe(
+        saveResult => {
+          if (saveResult.result) {
+            this.getParticipants();
+            this.presentToast('Invitation declined.', 'danger');
           }
         });
   }
@@ -101,16 +166,19 @@ export class EventDetailsPage implements OnInit {
         saveResult => {
           if (saveResult.result) {
             this.presentToast("You left the event " + this.event.title + ".", "danger");
-            this.router.navigate(['/events-list'], { replaceUrl: true });
+            this.router.navigate(['/tabs/events-list'], { replaceUrl: true });
           }
         });
   }
 
   async confirm() {
-    this.eventService.cancel(this.event.id)
+    this.eventService.confirm(this.event.id)
       .subscribe(
         saveResult => {
           if (saveResult.result) {
+            this.canCheckIn = false;
+            this.canConfirmEvent = false;
+            this.event.status = 1;
             this.presentToast("Event confirmed!", "success");
           }
         });
@@ -122,7 +190,7 @@ export class EventDetailsPage implements OnInit {
         saveResult => {
           if (saveResult.result) {
             this.presentToast("You canceled the event " + this.event.title + ".", "danger");
-            this.router.navigate(['/events-list'], { replaceUrl: true });
+            this.router.navigate(['/tabs/events-list'], { replaceUrl: true });
           }
         });
   }
@@ -131,6 +199,9 @@ export class EventDetailsPage implements OnInit {
     const modal = await this.modalController.create({
       component: InvitePage,
       componentProps: { participants: this.participants, eventId: this.id }
+    });
+    modal.onDidDismiss().then((data: any) => {
+      this.getParticipants();
     });
     return await modal.present();
   }
@@ -146,7 +217,10 @@ export class EventDetailsPage implements OnInit {
   async propose() {
     const modal = await this.modalController.create({
       component: ProposeGamesPage,
-      componentProps: { eventId: this.event.id, participants: this.participants }
+      componentProps: { eventId: this.event.id, participants: this.participants.filter(p => p.status == 1) }
+    });
+    modal.onDidDismiss().then((data: any) => {
+      this.getProposedGames();
     });
     return await modal.present();
   }
@@ -154,7 +228,10 @@ export class EventDetailsPage implements OnInit {
   async vote() {
     const modal = await this.modalController.create({
       component: VoteGamesPage,
-      componentProps: { eventId: this.event.id, actionType: 0 }
+      componentProps: { eventId: this.event.id, actionType: 0, participants: this.participants.filter(p => p.status == 1) }
+    });
+    modal.onDidDismiss().then((data: any) => {
+      this.getProposedGames();
     });
     return await modal.present();
   }
@@ -162,16 +239,23 @@ export class EventDetailsPage implements OnInit {
   async choose() {
     const modal = await this.modalController.create({
       component: VoteGamesPage,
-      componentProps: { eventId: this.event.id, actionType: 1 }
+      componentProps: { eventId: this.event.id, actionType: 1, participants: this.participants.filter(p => p.status == 1) }
+    });
+    modal.onDidDismiss().then((data: any) => {
+      this.getProposedGames();
     });
     return await modal.present();
   }
 
   checkIn() {
-    var saveResult = this.eventService.checkInParticipant(this.globals.user.id, this.event.id);
-    if (saveResult.result) {
-      this.checkedIn = true;
-    }
+    this.eventService.checkIn(this.id, this.globals.user.id)
+      .subscribe(
+        saveResult => {
+          if (saveResult.result) {
+            this.checkedIn = true;
+            this.getParticipants();
+          }
+        });
   }
 
   async viewParticipants() {
@@ -187,7 +271,6 @@ export class EventDetailsPage implements OnInit {
   }
 
   saveLocation() {
-
     this.eventService.update(this.event)
       .subscribe(
         saveResult => {
@@ -195,5 +278,31 @@ export class EventDetailsPage implements OnInit {
             this.locationInputVisible = false;
           }
         });
+  }
+
+  async getLeaderboard() {
+    this.eventService.getLeaderboard(this.id).subscribe(leaderboardScores => {
+      this.leaderboardScores = leaderboardScores;
+      this.leaderboardFilled = leaderboardScores.length > 0;
+    });
+  }
+
+  async fillLeaderboard() {
+    const modal = await this.modalController.create({
+      component: LeaderboardFormPage,
+      componentProps: { eventId: this.event.id }
+    });
+    modal.onDidDismiss().then((data: any) => {
+      this.getLeaderboard();
+    });
+    return await modal.present();
+  }
+
+  async viewLeaderboard() {
+    const modal = await this.modalController.create({
+      component: LeaderboardPage,
+      componentProps: { eventId: this.event.id }
+    });
+    return await modal.present();
   }
 }

@@ -1,10 +1,7 @@
 package com.bgmeetup.backend.repository;
 
-import com.bgmeetup.backend.domain.Event;
-import com.bgmeetup.backend.domain.EventParticipant;
-import com.bgmeetup.backend.dto.EventDto;
-import com.bgmeetup.backend.dto.EventParticipantDto;
-import com.bgmeetup.backend.dto.SaveResult;
+import com.bgmeetup.backend.domain.*;
+import com.bgmeetup.backend.dto.*;
 import com.bgmeetup.backend.enums.EventStatus;
 import com.bgmeetup.backend.enums.InviteStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +36,7 @@ public class EventRepository {
         return jdbcTemplate.query(sql, mapper);
     }
 
-    public SaveResult create(Event event) {
+    public UUID create(Event event) {
         String sql = "INSERT INTO event VALUES(?, ?, ?, ?, STR_TO_DATE(? ,'%Y-%m-%d %H:%i:%s'), ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -60,10 +57,7 @@ public class EventRepository {
             return preparedStatement;
         }, keyHolder);
 
-        var participant = new EventParticipant(eventId, event.getHostId(), event.getHostId(), InviteStatus.Accepted.getValue());
-        this.invite(participant);
-
-        return new SaveResult(true,null);
+        return eventId;
     }
 
 
@@ -80,7 +74,7 @@ public class EventRepository {
     }
 
     public SaveResult join(String eventId, String userId){
-        String sql = "INSERT INTO event_participant VALUES(?, ?, ?, ?)";
+        String sql = "INSERT INTO event_participant VALUES(?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -129,23 +123,152 @@ public class EventRepository {
         return new SaveResult(true, null);
     }
 
-    public void invite(EventParticipant eventParticipant){
-        String sql = "INSERT INTO event_participant VALUES(?, ?, ?, ?)";
+    public SaveResult invite(EventParticipant eventParticipant){
+        String sql = "INSERT INTO event_participant VALUES(?, ?, ?, ?, ?, ?)" +
+                     "ON DUPLICATE KEY UPDATE status = ?";
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setObject(1, eventParticipant.getEventId().toString());
             preparedStatement.setObject(2, eventParticipant.getParticipantId().toString());
             preparedStatement.setObject(3, eventParticipant.getInviterId().toString());
-            preparedStatement.setObject(4, eventParticipant.getStatus());
+            preparedStatement.setString(4, eventParticipant.getEmail());
+            preparedStatement.setInt(5, eventParticipant.getStatus());
+            preparedStatement.setBoolean(6, eventParticipant.isCheckedIn());
+            preparedStatement.setInt(7, eventParticipant.getStatus());
             return preparedStatement;
         });
+        return new SaveResult(true, null);
+    }
+
+    public SaveResult acceptInvitation(String eventId, String userId) {
+        String sql = "UPDATE event_participant SET status = ? WHERE eventId = ? && participantId = ?";
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setInt(1, InviteStatus.Accepted.getValue());
+            preparedStatement.setString(2, eventId);
+            preparedStatement.setString(3, userId);
+            return preparedStatement;
+        });
+        return new SaveResult(true, null);
+    }
+
+    public SaveResult declineInvitation(String eventId, String userId) {
+        String sql = "UPDATE event_participant SET status = ? WHERE eventId = ? && participantId = ?";
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setInt(1, InviteStatus.Refused.getValue());
+            preparedStatement.setString(2, eventId);
+            preparedStatement.setString(3, userId);
+            return preparedStatement;
+        });
+        return new SaveResult(true, null);
+    }
+
+    public Optional<EventParticipantDto> getParticipant(String eventId, String email) {
+        String sql = "SELECT * FROM event_participant WHERE eventId = '" + eventId +
+                     "' &&  email = '" + email + "'";
+        RowMapper<EventParticipantDto> mapper = getEventParticipantRowMapper();
+        return jdbcTemplate.query(sql, mapper).stream().findFirst();
     }
 
     public List<EventParticipantDto> getParticipants(String eventId){
         String sql = "SELECT * FROM event_participant WHERE eventId = ?";
         RowMapper<EventParticipantDto> mapper = getEventParticipantRowMapper();
         return jdbcTemplate.query(sql, mapper, eventId);
+    }
+
+    public SaveResult checkIn(String eventId, String userId) {
+        String sql = "UPDATE event_participant SET checkedIn = ? WHERE eventId = ? && participantId = ?";
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setBoolean(1, true);
+            preparedStatement.setString(2, eventId);
+            preparedStatement.setString(3, userId);
+            return preparedStatement;
+        });
+        return new SaveResult(true, null);
+    }
+
+    public SaveResult submitLeaderboard(List<LeaderboardScore> scores) {
+        String sql = "INSERT INTO score VALUES(?, ?, ?, ?, ?)" +
+                     "ON DUPLICATE KEY UPDATE id = ?";
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+            int i = 0;
+            for (LeaderboardScore score : scores) {
+
+                var scoreId = UUID.randomUUID().toString();
+                preparedStatement.setObject(1, scoreId);
+                preparedStatement.setObject(2, score.getEventId().toString());
+                preparedStatement.setObject(3, score.getGameId().toString());
+                preparedStatement.setObject(4, score.getParticipantId().toString());
+                preparedStatement.setObject(5, score.getScore());
+                preparedStatement.setObject(6, scoreId);
+
+                preparedStatement.addBatch();
+
+                i++;
+
+                if (i % 1000 == 0 || i == scores.size()) {
+                    preparedStatement.executeBatch();
+                }
+            }
+
+            return preparedStatement;
+        });
+
+        return new SaveResult(true, null);
+    }
+
+    public List<LeaderboardScoreDto> getLeaderboard(String eventId) {
+        String sql = "SELECT * FROM score WHERE eventId = '" + eventId + "'";
+        RowMapper<LeaderboardScoreDto> mapper = getLeaderboardScoreRowMapper();
+        return jdbcTemplate.query(sql, mapper);
+    }
+
+    public SaveResult submitFeedback(List<Feedback> feedbacks) {
+        String sql = "INSERT INTO feedback VALUES(?, ?, ?, ?, ?, ?)" +
+                     "ON DUPLICATE KEY UPDATE id = ?";
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+            int i = 0;
+            for (Feedback feedback : feedbacks) {
+                var feedbackId = UUID.randomUUID().toString();
+                preparedStatement.setObject(1, feedbackId);
+                preparedStatement.setObject(2, feedback.getEventId().toString());
+                preparedStatement.setObject(3, feedback.getGameId().toString());
+                preparedStatement.setObject(4, feedback.getParticipantId().toString());
+                preparedStatement.setObject(5, feedback.getFeedbackGiverId().toString());
+                preparedStatement.setObject(6, feedback.getType());
+                preparedStatement.setObject(7, feedbackId);
+
+                preparedStatement.addBatch();
+
+                i++;
+
+                if (i % 1000 == 0 || i == feedbacks.size()) {
+                    preparedStatement.executeBatch();
+                }
+            }
+
+            return preparedStatement;
+        });
+
+        return new SaveResult(true, null);
+    }
+
+    public List<Feedback> getFeedback(String eventId) {
+        String sql = "SELECT * FROM feedback WHERE eventId = '" + eventId + "'";
+        RowMapper<Feedback> mapper = getFeedbackRowMapper();
+        return jdbcTemplate.query(sql, mapper);
     }
 
     private RowMapper<EventDto> getEventRowMapper() {
@@ -159,7 +282,7 @@ public class EventRepository {
                 resultSet.getObject("date", LocalDateTime.class),
                 "",
                 "",
-                0,
+                resultSet.getInt("status"),
                 0
         );
     }
@@ -169,9 +292,33 @@ public class EventRepository {
                 UUID.fromString(resultSet.getString("eventId")),
                 UUID.fromString(resultSet.getString("participantId")),
                 UUID.fromString(resultSet.getString("inviterId")),
-                resultSet.getInt("status"),
                 "",
-                ""
+                resultSet.getString("email"),
+                "",
+                resultSet.getInt("status"),
+                resultSet.getBoolean("checkedIn")
+        );
+    }
+
+    private RowMapper<LeaderboardScoreDto> getLeaderboardScoreRowMapper() {
+        return (resultSet, i) -> new LeaderboardScoreDto(
+                UUID.fromString(resultSet.getString("eventId")),
+                UUID.fromString(resultSet.getString("gameId")),
+                UUID.fromString(resultSet.getString("participantId")),
+                "",
+                "",
+                resultSet.getInt("score")
+        );
+    }
+
+    private RowMapper<Feedback> getFeedbackRowMapper() {
+        return (resultSet, i) -> new Feedback(
+                UUID.fromString(resultSet.getString("id")),
+                UUID.fromString(resultSet.getString("eventId")),
+                UUID.fromString(resultSet.getString("gameId")),
+                UUID.fromString(resultSet.getString("participantId")),
+                UUID.fromString(resultSet.getString("feedbackGiverId")),
+                resultSet.getInt("type")
         );
     }
 }

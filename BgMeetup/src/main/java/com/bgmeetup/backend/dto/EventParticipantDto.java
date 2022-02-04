@@ -14,7 +14,9 @@ public class EventParticipantDto {
     private UUID eventId;
     private UUID participantId;
     private UUID inviterId;
-    private Integer status;
     private String participantName;
-    private String inviterName;
+    private String email;
+    private String bggUsername;
+    private Integer status;
+    private boolean checkedIn;
 }

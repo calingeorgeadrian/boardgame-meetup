@@ -65,7 +65,6 @@ public class UserRepository {
         return jdbcTemplate.query(sql, mapper, email).stream().findFirst();
     }
 
-
     public SaveResult update(User user) {
         String sql = "UPDATE user SET email = ?, firstName = ?, lastName = ?, location = ?, bggUserName = ? WHERE id = ?";
 

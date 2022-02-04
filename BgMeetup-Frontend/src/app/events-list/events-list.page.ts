@@ -28,12 +28,11 @@ export class EventsListPage implements OnInit {
     this.getEvents();
   }
 
-  getEvents() {
-    ////this.events = this.eventService.getEvents(this.globals.user.id);
-    //this.invites = this.events.filter(e => e.status == 0);
-    //this.ownEvents = this.events.filter(e => e.status == 1);
-    //this.otherEvents = this.events.filter(e => e.status != 0 && e.status != 1);
+  ngOnNavigatedTo() {
+    this.getEvents();
+  }
 
+  getEvents() {
     this.eventService.getEvents(this.globals.user.id).subscribe(events => {
       this.events = events;
       this.invites = events.filter(e => e.status == 0);
@@ -64,36 +63,24 @@ export class EventsListPage implements OnInit {
   }
 
   acceptInvitation(id: any) {
-    var saveResult = this.eventService.acceptEventInvitation(id, this.globals.user.id);
-    if (saveResult.result) {
-      this.getEvents();
-      this.presentToast('Invitation accepted.', 'success');
-    }
-
-    //this.eventService.acceptEventInvitation(id, this.globals.user.id)
-    //  .subscribe(
-    //    saveResult => {
-    //      if (saveResult.result) {
-    //        this.getEvents();
-    //        this.presentToast('Invitation accepted.', 'success');
-    //      }
-    //    });
+    this.eventService.acceptInvitation(id, this.globals.user.id)
+      .subscribe(
+        saveResult => {
+          if (saveResult.result) {
+            this.viewEvent(id);
+            this.presentToast('Invitation accepted.', 'success');
+          }
+        });
   }
 
   declineInvitation(id: any) {
-    var saveResult = this.eventService.declineEventInvitation(id, this.globals.user.id);
-    if (saveResult.result) {
-      this.getEvents();
-      this.presentToast('Invitation declined.', 'danger');
-    }
-
-    //this.eventService.declineEventInvitation(id, this.globals.user.id)
-    //  .subscribe(
-    //    saveResult => {
-    //      if (saveResult.result) {
-    //        this.getEvents();
-    //        this.presentToast('Invitation declined.', 'danger');
-    //      }
-    //    });
+    this.eventService.declineInvitation(id, this.globals.user.id)
+      .subscribe(
+        saveResult => {
+          if (saveResult.result) {
+            this.getEvents();
+            this.presentToast('Invitation declined.', 'danger');
+          }
+        });
   }
 }
