@@ -70,7 +70,7 @@ export class FeedbackFormPage implements OnInit {
     toxic.gameId = this.score.gameId;
     toxic.participantId = this.score.participantId;
     toxic.feedbackGiverId = this.globals.user.id;
-    toxic.title = "Toxic - ";
+    toxic.title = "Toxic";
     toxic.type = 12;
     toxic.isSelected = false;
     this.feedbackTypes.push(toxic);

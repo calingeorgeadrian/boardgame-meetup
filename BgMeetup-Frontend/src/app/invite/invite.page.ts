@@ -73,21 +73,18 @@ export class InvitePage implements OnInit {
     var participant = new EventParticipantModel();
     participant.email = friend.email;
     participant.eventId = this.eventId;
-    participant.participantId = friend.userId;
+    participant.participantId = friend.friendId;
     participant.inviterId = this.globals.user.id;
     participant.status = 0;
     participant.participantName = friend.name;
 
-    console.log("friends not yet implemented");
-
-    //this.eventService.sendEventInvitation(participant)
-    //  .subscribe(
-    //    saveResult => {
-    //      if (saveResult.result) {
-    //        this.presentToast();
-    //        this.participants.push(participant);
-    //        this.dismiss();
-    //      }
-    //    });
+    this.eventService.invite(participant)
+      .subscribe(
+        saveResult => {
+          if (saveResult.result) {
+            this.presentToast();
+            this.dismiss();
+          }
+        });
   }
 }
