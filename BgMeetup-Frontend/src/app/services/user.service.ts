@@ -90,36 +90,24 @@ export class UserService {
       });
   }
 
-  //acceptFriendRequest(id: any): Observable<any> {
-  acceptFriendRequest(id: any): any {
-    var saveResult = new SaveResult();
-    saveResult.result = true;
-    saveResult.errors = null;
+  acceptFriendRequest(item: FriendRequestModel): Observable<any> {
+  // acceptFriendRequest(id: any): any {
+  //   var saveResult = new SaveResult();
+  //   saveResult.result = true;
+  //   saveResult.errors = null;
+  //
+  //   return saveResult;
 
-    return saveResult;
-
-    /*return this.http.get<any>(environment.apiUrl + '/users/AcceptFriendRequestAsync?id=' + id);*/
+    return this.http.get<any>(environment.apiUrl + '/friends/friendRequest/' + item.senderId + '/accept/' + item.receiverId);
   }
 
-  //declineFriendRequest(id: any): Observable<any> {
-  declineFriendRequest(id: any): any {
-    var saveResult = new SaveResult();
-    saveResult.result = true;
-    saveResult.errors = null;
-
-    return saveResult;
-
-    //return this.http.get<any>(environment.apiUrl + '/users/DeclineFriendRequestAsync?id=' + id);
+  declineFriendRequest(item: FriendRequestModel): Observable<any> {
+    return this.http.delete<any>(environment.apiUrl + '/friends/friendRequest/' + item.senderId + '/decline/' + item.receiverId);
   }
 
-  //removeFriend(id: any): Observable<any> {
-  removeFriend(id: any): any {
-    var saveResult = new SaveResult();
-    saveResult.result = true;
-    saveResult.errors = null;
-
-    return saveResult;
-
-    //return this.http.get<any>(environment.apiUrl + '/users/RemoveFriendAsync?id=' + id);
-  }
+  removeFriend(item: FriendModel): Observable<any> {
+    console.log(item);
+    return this.http.delete<any>(environment.apiUrl + '/friends/' + this.globals.user.id
+      + '/remove/' + item.friendId);
+    }
 }

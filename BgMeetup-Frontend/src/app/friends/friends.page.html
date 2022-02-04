@@ -48,7 +48,7 @@
           <img src="{{item.image}}">
         </ion-avatar>-->
         <ion-label>{{item.name}}</ion-label>
-        <ion-icon name="person-remove-outline" color="danger" slot="end" (click)="removeFriend(item.id)"></ion-icon>
+        <ion-icon name="person-remove-outline" color="danger" slot="end" (click)="removeFriend(item)"></ion-icon>
       </ion-item>
     </ion-list>
   </div>
@@ -60,8 +60,8 @@
           <img src="{{item.image}}">
         </ion-avatar>-->
         <ion-label>{{item.name}}</ion-label>
-        <ion-icon name="thumbs-up-outline" color="success" slot="end" (click)="acceptFriendRequest(item.id)"></ion-icon>
-        <ion-icon name="thumbs-down-outline" color="danger" slot="end" (click)="declineFriendRequest(item.id)"></ion-icon>
+        <ion-icon name="thumbs-up-outline" color="success" slot="end" (click)="acceptFriendRequest(item)"></ion-icon>
+        <ion-icon name="thumbs-down-outline" color="danger" slot="end" (click)="declineFriendRequest(item)"></ion-icon>
       </ion-item>
     </ion-list>
     <ion-list>
@@ -71,7 +71,7 @@
           <img src="{{item.image}}">
         </ion-avatar>-->
         <ion-label>{{item.name}}</ion-label>
-        <ion-icon name="close-outline" color="danger" slot="end" (click)="declineFriendRequest(item.id)"></ion-icon>
+        <ion-icon name="close-outline" color="danger" slot="end" (click)="declineFriendRequest(item)"></ion-icon>
       </ion-item>
     </ion-list>
   </div>

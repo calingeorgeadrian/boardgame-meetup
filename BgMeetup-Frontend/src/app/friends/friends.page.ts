@@ -45,6 +45,8 @@ export class FriendsPage implements OnInit {
      this.friendRequests = friendRequests;
      this.receivedFriendRequests = this.friendRequests.filter(fr => fr.receiverId === this.globals.user.id);
      this.sentFriendRequests = this.friendRequests.filter(fr => fr.senderId === this.globals.user.id);
+     console.log(friendRequests);
+     console.log(this.sentFriendRequests);
     });
   }
 
@@ -87,67 +89,59 @@ export class FriendsPage implements OnInit {
   }
 
   acceptFriendRequest(id: any) {
-    var saveResult = this.userService.acceptFriendRequest(id);
-    if (saveResult.result) {
-      var friendRequest = this.receivedFriendRequests.find(fr => fr.id === id);
-      var newFriend = new FriendModel();
-      newFriend.userId = friendRequest.senderId;
-      newFriend.name = friendRequest.name;
-      this.friends.push(newFriend);
-      this.friendRequests = this.friendRequests.filter(fr => fr.id !== id);
-      this.receivedFriendRequests = this.receivedFriendRequests.filter(fr => fr.id !== id);
-      this.presentToast('Friend request accepted.', 'success');
-    }
+    // var saveResult = this.userService.acceptFriendRequest(id);
+    // if (saveResult.result) {
+    //   var friendRequest = this.receivedFriendRequests.find(fr => fr.id === id);
+    //   var newFriend = new FriendModel();
+    //   newFriend.userId = friendRequest.senderId;
+    //   newFriend.name = friendRequest.name;
+    //   this.friends.push(newFriend);
+    //   this.friendRequests = this.friendRequests.filter(fr => fr.id !== id);
+    //   this.receivedFriendRequests = this.receivedFriendRequests.filter(fr => fr.id !== id);
+    //   this.presentToast('Friend request accepted.', 'success');
+    // }
 
-    //this.userService.acceptFriendRequest(id)
-    //  .subscribe(
-    //    saveResult => {
-    //      if (saveResult.result) {
-    //        var friendRequest = this.receivedFriendRequests.find(fr => fr.id === id);
-    //        var newFriend = new FriendModel();
-    //        newFriend.userId = friendRequest.senderId;
-    //        newFriend.name = friendRequest.name;
-    //        this.friends.push(newFriend);
-    //        this.friendRequests = this.friendRequests.filter(fr => fr.id !== id);
-    //        this.receivedFriendRequests = this.receivedFriendRequests.filter(fr => fr.id !== id);
-    //        this.presentToast('Friend request accepted.', 'success');
-    //      }
-    //    });
+    this.userService.acceptFriendRequest(id)
+     .subscribe(
+       saveResult => {
+         if (saveResult.result) {
+           var friendRequest = this.receivedFriendRequests.find(fr => fr.id === id);
+           var newFriend = new FriendModel();
+           newFriend.friendId = friendRequest.senderId;
+           newFriend.name = friendRequest.name;
+           this.friends.push(newFriend);
+           this.friendRequests = this.friendRequests.filter(fr => fr.id !== id);
+           this.receivedFriendRequests = this.receivedFriendRequests.filter(fr => fr.id !== id);
+           this.presentToast('Friend request accepted.', 'success');
+         }
+       });
   }
 
-  declineFriendRequest(id: any) {
-    var saveResult = this.userService.declineFriendRequest(id);
-    if (saveResult.result) {
-      this.friendRequests = this.friendRequests.filter(fr => fr.id !== id);
-      this.receivedFriendRequests = this.receivedFriendRequests.filter(fr => fr.id !== id);
-      this.presentToast('Friend request declined.', 'danger');
-    }
-
-    //this.userService.declineFriendRequest(id)
-    //  .subscribe(
-    //    saveResult => {
-    //      if (saveResult.result) {
-    //        this.friendRequests = this.friendRequests.filter(fr => fr.id !== id);
-    //        this.receivedFriendRequests = this.receivedFriendRequests.filter(fr => fr.id !== id);
-    //        this.presentToast('Friend request declined.', 'danger');
-    //      }
-    //    });
+  declineFriendRequest(friendRequestModel: FriendRequestModel) {
+    console.log(friendRequestModel);
+    this.userService.declineFriendRequest(friendRequestModel)
+     .subscribe(
+       _ => {
+         this.friendRequests = this.friendRequests.filter(fr => fr.senderId === friendRequestModel.senderId
+             && fr.receiverId === friendRequestModel.receiverId );
+         this.receivedFriendRequests = this.receivedFriendRequests.filter(fr => fr.senderId !== friendRequestModel.senderId);
+         this.sentFriendRequests = this.sentFriendRequests.filter(fr => fr.receiverId !== friendRequestModel.receiverId);
+         this.presentToast('Friend request declined.', 'danger');
+       });
   }
 
-  removeFriend(id: any) {
-    var saveResult = this.userService.removeFriend(id);
-    if (saveResult.result) {
-      this.friends = this.friends.filter(f => f.userId !== id);
-      this.presentToast('Friend removed.', 'danger');
-    }
+  removeFriend(item: FriendModel) {
+    // var saveResult = this.userService.removeFriend(id);
+    // if (saveResult.result) {
+    //   this.friends = this.friends.filter(f => f.userId !== id);
+    //   this.presentToast('Friend removed.', 'danger');
+    // }
 
-    //this.userService.removeFriend(id)
-    //  .subscribe(
-    //    saveResult => {
-    //      if (saveResult.result) {
-    //        this.friends = this.friends.filter(f => f.userId !== id);
-    //        this.presentToast('Friend removed.', 'danger');
-    //      }
-    //    });
+    this.userService.removeFriend(item)
+     .subscribe(
+       _ => {
+           this.friends = this.friends.filter(f => f.friendId !== item.friendId);
+           this.presentToast('Friend removed.', 'danger');
+       });
   }
 }
