@@ -12,9 +12,8 @@ import java.util.UUID;
 @Builder
 public class FriendInvitationDto {
     private UUID id;
+    private UUID senderId;
+    private UUID receiverId;
     private String email;
-    private String firstName;
-    private String lastName;
-    private String location;
-    private String bggUsername;
+    private String name;
 }

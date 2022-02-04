@@ -73,7 +73,24 @@ public class FriendRepository {
     public List<String> getReceiverIdsForSentFriendRequests(String userId) {
         String sql = "SELECT * FROM pending_friend_request WHERE senderId = ?";
 
-        RowMapper<String> mapper = ((resultSet, i) -> resultSet.getString("senderId"));
+        RowMapper<String> mapper = ((resultSet, i) -> resultSet.getString("receiverId"));
         return new ArrayList<>(jdbcTemplate.query(sql, mapper, userId));
+    }
+
+    public void declineFriendRequest(String userId, String friendId) {
+        String sql = "DELETE FROM pending_friend_request WHERE (senderId = ? AND receiverId = ?) OR (receiverId = ? AND senderId = ?)";
+        jdbcTemplate.update(sql, userId, friendId, friendId, userId);
+    }
+
+    public void acceptFriendRequest(String userId, String friendId, String nameUser, String nameFriend) {
+        String sql1 = "INSERT INTO friends VALUES(?, ?, ?, ?)";
+        jdbcTemplate.update(sql1, UUID.randomUUID().toString(), userId, friendId, nameFriend);
+        String sql2 = "INSERT INTO friends VALUES(?, ?, ?, ?)";
+        jdbcTemplate.update(sql2, UUID.randomUUID().toString(), friendId, userId, nameUser);
+    }
+
+    public void removeFriend(String userId, String friendId) {
+        String sql = "DELETE FROM friends WHERE (userId = ? AND friendId = ?) OR (userId = ? AND friendId = ?)";
+        jdbcTemplate.update(sql, userId, friendId, friendId, userId);
     }
 }

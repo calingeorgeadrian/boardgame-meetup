@@ -25,7 +25,8 @@ public class FriendController {
 
     @GetMapping(path="/getFriends/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<FriendDto> getFriends(@PathVariable String userId) {
-        return friendService.getFriends(userId);
+        List<FriendDto> f = friendService.getFriends(userId);
+        return f;
     }
 
     @PostMapping(path="/friendRequest/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -49,5 +50,21 @@ public class FriendController {
         friendInvitationDtoList.addAll(friendService.getFriendRequestsSent(userId));
         friendInvitationDtoList.addAll(friendService.getFriendRequestsReceived(userId));
         return friendInvitationDtoList;
+    }
+
+    @GetMapping(value = "friendRequest/{senderId}/accept/{receiverId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<FriendDto> acceptFriendRequest(@PathVariable String senderId, @PathVariable String receiverId) {
+        friendService.acceptFriendRequest(senderId, receiverId);
+        return friendService.getFriends(senderId);
+    }
+
+    @DeleteMapping(value = "friendRequest/{senderId}/decline/{receiverId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void declineFriendRequest(@PathVariable String senderId, @PathVariable String receiverId) {
+        friendService.declineFriendRequest(senderId, receiverId);
+    }
+
+    @DeleteMapping(value = "{senderId}/remove/{receiverId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void removeFriend(@PathVariable String senderId, @PathVariable String receiverId) {
+        friendService.removeFriend(senderId, receiverId);
     }
 }

@@ -29,10 +29,18 @@ public interface FriendMapper {
     @Mappings({
             @Mapping(target = "id", source = "dto.id"),
             @Mapping(target = "email", source = "dto.email"),
-            @Mapping(target = "firstName", source = "dto.firstName"),
-            @Mapping(target = "lastName", source = "dto.lastName"),
-            @Mapping(target = "location", source = "dto.location"),
-            @Mapping(target = "bggUsername", source = "dto.bggUsername")
+            @Mapping(target = "firstName", source = "dto.name"),
+//            @Mapping(target = "senderId", source = "senderId"),
+            @Mapping(target = "receiverId", source = "dto.id"),
     })
-    List<FriendInvitationDto> toDtoList(List<UserDto> dto);
+    List<FriendInvitationDto> toDtoListForRequestSent(List<UserDto> dto);
+
+    @Mappings({
+            @Mapping(target = "id", source = "dto.id"),
+            @Mapping(target = "email", source = "dto.email"),
+            @Mapping(target = "firstName", source = "dto.name"),
+            @Mapping(target = "senderId", source = "dto.id"),
+//            @Mapping(target = "receiverId", source = "receiverId"),
+    })
+    List<FriendInvitationDto> toDtoListForRequestReceived(List<UserDto> dto);
 }
