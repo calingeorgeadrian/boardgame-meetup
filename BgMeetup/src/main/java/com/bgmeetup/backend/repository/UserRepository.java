@@ -4,6 +4,7 @@ import com.bgmeetup.backend.domain.User;
 import com.bgmeetup.backend.dto.SaveResult;
 import com.bgmeetup.backend.dto.UserDto;
 import com.bgmeetup.backend.dto.UserLoginDto;
+import org.apache.tomcat.util.buf.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -51,12 +53,17 @@ public class UserRepository {
         return jdbcTemplate.query(sql, mapper, id).stream().findFirst();
     }
 
+    public List<UserDto> getByIds(List<String> ids) {
+        String sql = "SELECT * FROM user WHERE id in ("+ "\"" + StringUtils.join(ids, ',')+ "\"" + ")";
+        RowMapper<UserDto> mapper = getUserRowMapper();
+        return jdbcTemplate.query(sql, mapper);
+    }
+
     public Optional<UserDto> getByEmail(String email) {
         String sql = "SELECT * FROM user WHERE email = ?";
         RowMapper<UserDto> mapper = getUserRowMapper();
         return jdbcTemplate.query(sql, mapper, email).stream().findFirst();
     }
-
 
     public SaveResult update(User user) {
         String sql = "UPDATE user SET email = ?, firstName = ?, lastName = ?, location = ?, bggUserName = ? WHERE id = ?";

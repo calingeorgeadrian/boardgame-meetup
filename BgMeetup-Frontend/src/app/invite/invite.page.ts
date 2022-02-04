@@ -28,11 +28,11 @@ export class InvitePage implements OnInit {
   }
 
   ngOnInit() {
-    this.friends = this.userService.getFriends(this.globals.user.id);
+    // this.friends = this.userService.getFriends(this.globals.user.id);
 
-    //this.userService.getFriends(this.globals.user.id).subscribe(friends => {
-    //  this.friends = friends;
-    //});
+    this.userService.getFriends(this.globals.user.id).subscribe(friends => {
+     this.friends = friends;
+    });
   }
 
   async presentToast() {

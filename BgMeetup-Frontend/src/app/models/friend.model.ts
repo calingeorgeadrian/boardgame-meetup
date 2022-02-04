@@ -1,4 +1,4 @@
 export class FriendModel {
-  userId: string;
+  friendId: string;
   name: string;
 }

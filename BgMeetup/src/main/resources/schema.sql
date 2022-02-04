@@ -103,3 +103,17 @@ CREATE TABLE `feedback` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+
+CREATE TABLE `friends` (
+    `id` varchar(36) NOT NULL,
+    `userId` varchar(36) NOT NULL,
+    `friendId` varchar(36) NOT NULL,
+    `name` varchar(36) NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `pending_friend_request` (
+    `senderId` varchar(36) NOT NULL,
+    `receiverId` varchar(36) NOT NULL,
+    PRIMARY KEY (`senderId`, `receiverId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
